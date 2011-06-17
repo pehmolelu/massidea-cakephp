@@ -27,6 +27,7 @@
  */
 
 class PrivateMessagesController extends AppController {
+    
 	var $components = array('RequestHandler');
 	
 	public function beforeFilter() {
@@ -35,14 +36,15 @@ class PrivateMessagesController extends AppController {
 	}
 	
 	public function send() {
+
 		$this->autoRender = false;
 		$this->autoLayout = false;
-		
 		if ($this->RequestHandler->isAjax()) {
             if (!empty($this->data)) {
             	//When users are ready this needs validation because data can be altered by end user.
-            	$this->data['PrivateMessage']['sender'] = 2; //Should be replaced with user id from session when they are ready!
+            	$this->data['PrivateMessage']['sender'] = $this->userId; //replaced with user id from session!
 				if($this->PrivateMessage->save($this->data)) {
+
 					echo 1;
 				} else {
 					die;
@@ -54,7 +56,21 @@ class PrivateMessagesController extends AppController {
 			$this->redirect('/');
 		}
 	}
-	
-	
-	
+
+	public function browse(){
+		$id=$this->Session->read('Auth.User.id');
+		$this->set('content_sidebar', 'left');
+		$messages=$this->PrivateMessage->find('all');
+		$messages_in=$this->PrivateMessage->find('all',array('conditions'=>array('PrivateMessage.receiver'=>$id)));
+		$messages_out=$this->PrivateMessage->find('all',array('conditions'=>array('PrivateMessage.sender'=>$id)));
+		$this->set('messages',$messages);
+		$this->set('messages_in',$messages_in);
+		$this->set('messages_out',$messages_out);
+	}
+
+	public function delete(){
+
+	}
+
+
 }

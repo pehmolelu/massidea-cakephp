@@ -8,7 +8,10 @@
 	<p id="PrivateMessageTo"></p>
 	
 	<?php echo $form->hidden('receiver', array('value' => 0)); ?>
-
+	<?php echo $form->input('title', array('type' => 'text',
+											'label' => 'Title')
+	); ?>
+	<br />
 	<?php echo $form->input('message', array('type' => 'textarea',
 											'rows' => 6,
 											'cols' => 40,
