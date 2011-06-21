@@ -26,7 +26,7 @@
 Router::connect('/', array('controller' => 'contents', 'action' => 'browse', 'all'));
 	Router::connect('/contents/view/*', array('controller' => 'contents', 'action' => 'view'));
 	Router::connect('/contents/edit/*', array('controller' => 'contents', 'action' => 'edit'));
-	Router::connect('/contents/add/*', array('controller' => 'contents', 'action' => 'add'));
+	Router::connect('/contents/add/:type', array('controller' => 'contents', 'action' => 'add'));
 	Router::connect('/contents/challenge', array('controller' => 'contents', 'action' => 'browse', 'challenge'));
 	Router::connect('/contents/idea', array('controller' => 'contents', 'action' => 'browse', 'idea'));
 	Router::connect('/contents/vision', array('controller' => 'contents', 'action' => 'browse', 'vision'));

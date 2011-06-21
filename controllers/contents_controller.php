@@ -28,6 +28,8 @@
 
 class ContentsController extends AppController {
 	
+	public $validContentTypes = array('challenge','idea','vision');
+	
 	public $components = array('Cookie','Cookievalidation','Content_','Tag_','Company_');
 	public $uses = array('Contents','Language','LinkedContent','Tags', 'RelatedCompanies','Baseclasses');
 	
@@ -90,7 +92,19 @@ class ContentsController extends AppController {
 		if(isset($this->userId)) {
 		
 			if (!empty($this->data)) { // If form has been posted
-				$this->data['Privileges']['creator'] = $this->userId;
+				$this->data['Node']['type'] = 'Content'; //Set Node type
+				$this->data['Privileges']['creator'] = $this->userId; // Set creator to the logged in user
+				
+				if($this->data['Node']['published'] == 1) {
+					$this->data['Privileges']['privileges'] = '755'; // Set basic privileges
+				} else {
+					$this->data['Privileges']['privileges'] = '700'; // Set privileges so that other users cant read it
+				}
+				
+				if(in_array($this->params['type'],$this->validContentTypes)) {
+					$this->data['Node']['class'] = $this->params['type'];
+				}			
+				
 				$this->Content_->setAllContentDataForSave($this->data);
 				$this->Tag_->setTagsForSave($this->data['Tags']['tags'],$this->data['Privileges']);
 				$this->Company_->setCompaniesForSave($this->data['Companies']['companies'],$this->data['Privileges']);
