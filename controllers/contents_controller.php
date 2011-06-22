@@ -158,6 +158,7 @@ class ContentsController extends AppController {
 		if(isset($this->userId)) {
 			
 			if (!empty($this->data)) { // If form has been posted
+				$this->Nodes->cache = false;
 
 				//check that the content id is owned by the user
 				$content = $this->Nodes->find(array('type' => 'Content', 'Privileges.creator' => $this->userId, 'Privileges.id' => $contentId),array(),true);
@@ -185,7 +186,7 @@ class ContentsController extends AppController {
 				$this->Tag_->setTagsForSave($this->data['Tags']['tags'],array('privileges' => 555, 'creator' => $this->userId));
 				$this->Company_->setCompaniesForSave($this->data['Companies']['companies'],array('privileges' => 555, 'creator' => $this->userId));
 				
-				$contentBeforeSave = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
+				$contentBeforeSave = $content;
 				$childsToDelete = $contentBeforeSave[0]['Child'];				
 	
 				foreach($childsToDelete as $key => $child) {
@@ -229,6 +230,7 @@ class ContentsController extends AppController {
 				if($contentId == -1) {
 					$this->redirect('/');
 				}
+				$this->Nodes->cache = false;
 				$content = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
 				
 				if(empty($content)) {
