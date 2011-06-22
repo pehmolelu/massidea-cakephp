@@ -1,22 +1,21 @@
-$(document).ready(function(){
-	$("#accordion").accordion({header:'div.message-header', active:'none', autoHeight:false,collapsible:true});
-	$(".confirm-delete").hide();
-		$(".message-header >div> img.send").click(function() {
-		var id = $(this).siblings('.send-message-id');
-		if($(this).hasClass('delete'))
-
-			return false;
-		var name = $(this).siblings('.send-message-name');
-		$("#PrivateMessageTo").text(name.val());
-		$("#PrivateMessageReceiver").val(id.val());
-		$("#send_private_message").dialog("open");
-		return false;
+$(document).ready(function() {
+	$.ajax({ 
+		type: 'POST',
+		url: jsMeta.baseUrl+"/private_messages/browse/",
+		success: function(data) {
+			if(data) {
+				setFlash("Message sent successfully",'successfull');
+				showFlash();
+			} else {
+				setFlash("Failure in message send. Message not delivered");
+				showFlash();
+			}
+		}
 	});
-	$(".message-header >div> img.delete").click(function() {
-		$(this).hide();
-		$(this).siblings('.send').hide();
-		$(this).siblings('.confirm-delete').show();
-		return false;
-	});
-
-});
+	$('#example').dataTable( {
+		"bProcessing": true,
+		"sAjaxSource": "sources/arrays.txt",
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers"
+	} );
+} );

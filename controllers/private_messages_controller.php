@@ -10,7 +10,7 @@
  *  more details.
  *
  *  You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
- *  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *  Software Foundation, Inc., 59 Temple P	lace, Suite 330, Boston, MA 02111-1307 USA
  *
  *  License text found in /license/
  */
@@ -57,9 +57,22 @@ class PrivateMessagesController extends AppController {
 	
 	public function browse() {
 	
+	if ($this->RequestHandler->isAjax()) {
+				$id=$this->userId;
+				$messages = $this->PrivateMessage->find('all');
+				$messages_in = $this->PrivateMessage->find('all',array('conditions'=>array('receiver'=$id)));
+				$messages_out = $this->PrivateMessage->find('all',array('conditions'=>array('sender'=$id)));
+				echo json_encode($messages);
+	            
+			} else {
+				$this->redirect('/');
+			}
+		} else {
+			$this->redirect('/');
+		}
 	}
 	
-	
+	$this->set('content_sidebar','left');
 	
 	
 }
