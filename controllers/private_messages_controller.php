@@ -56,8 +56,9 @@ class PrivateMessagesController extends AppController {
 	}
 	
 	public function browse() {
-	
-	if ($this->RequestHandler->isAjax()) {
+		
+		$this->set('content_sidebar','left');
+		if ($this->RequestHandler->isAjax()) {
 				$id=$this->userId;
 				$messages = $this->PrivateMessage->find('all');
 				$messages_in = $this->PrivateMessage->find('all',array('conditions'=>array('receiver'=$id)));
@@ -67,12 +68,5 @@ class PrivateMessagesController extends AppController {
 			} else {
 				$this->redirect('/');
 			}
-		} else {
-			$this->redirect('/');
-		}
-	}
-	
-	$this->set('content_sidebar','left');
-	
-	
+		
 }
