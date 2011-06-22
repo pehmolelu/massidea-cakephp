@@ -55,6 +55,11 @@ class PrivateMessagesController extends AppController {
 		}
 	}
 	
+	public function browse() {
+	
+	}
+	
+	
 	
 	
 }
