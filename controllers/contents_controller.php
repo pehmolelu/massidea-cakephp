@@ -90,6 +90,10 @@ class ContentsController extends AppController {
 	public function add($contentType = 'challenge', $related = 0) {
 
 		if(isset($this->userId)) {
+			
+			if(!$contentType = $this->Content_->validateContentType($contentType)) { //We validate the contentType received from url to prevent XSS.
+				$this->redirect(array('controller' => '/'));
+			}
 		
 			if (!empty($this->data)) { // If form has been posted
 				$this->data['Node']['type'] = 'Content'; //Set Node type
@@ -101,7 +105,7 @@ class ContentsController extends AppController {
 					$this->data['Privileges']['privileges'] = '700'; // Set privileges so that other users cant read it
 				}
 				
-				if(in_array($this->params['type'],$this->validContentTypes)) {
+				if(in_array($contentType,$this->validContentTypes)) {
 					$this->data['Node']['class'] = $this->params['type'];
 				}			
 				
@@ -129,9 +133,7 @@ class ContentsController extends AppController {
 			}
 			
 			//$this->helpers[] = 'TinyMce.TinyMce'; //Commented out for future use...
-			if(!$contentType = $this->Content_->validateContentType($contentType)) { //We validate the contentType received from url to prevent XSS.
-				$this->redirect(array('controller' => '/'));
-			}
+			
 
 			$this->set('language_list',$this->Language->find('list',array('order' => array('Language.name' => 'ASC'))));
 			$this->set('content_type',$contentType);
@@ -153,72 +155,95 @@ class ContentsController extends AppController {
 	 * @param	int $contentId
 	 */
 	public function edit($contentId = -1) {
-		if (!empty($this->data)) { // If form has been posted
+		if(isset($this->userId)) {
+			
+			if (!empty($this->data)) { // If form has been posted
 
-			$this->data['Privileges']['creator'] = NULL;
-			$this->Content_->setAllContentDataForSave($this->data);
-			
-			$this->Tag_->setTagsForSave($this->data['Tags']['tags']);
-			$this->Company_->setCompaniesForSave($this->data['Companies']['companies']);
-			
-			$contentBeforeSave = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
-			$childsToDelete = $contentBeforeSave[0]['Child'];
-			
-			
-
-			foreach($childsToDelete as $key => $child) {
-				foreach($this->Tag_->getNewAndExistingTags() as $tag) {
-					if($child['id'] == $tag['Node']['id']) {
-						unset($childsToDelete[$key]); continue 2;
+				//check that the content id is owned by the user
+				$content = $this->Nodes->find(array('type' => 'Content', 'Privileges.creator' => $this->userId, 'Privileges.id' => $contentId),array(),true);
+				
+				if(empty($content)) {
+					$this->Session->setFlash('You dont own that content so go away!');
+					$this->redirect('/');
+				}
+				
+				$this->data['Privileges'] = $content[0]['Privileges'];
+				
+				if($this->data['Node']['published'] == 1) {
+					$this->data['Privileges']['privileges'] = '755'; // Set basic privileges
+				} else {
+					$this->data['Privileges']['privileges'] = '700'; // Set privileges so that other users cant read it
+				}
+				
+				$this->data['Node']['type'] = 'Content';
+				$this->data['Node']['id'] = $contentId;
+				$this->data['Node']['class'] = $content[0]['Node']['class'];
+				
+				//$this->data['Privileges']['creator'] = NULL;
+				$this->Content_->setAllContentDataForSave($this->data);
+	
+				$this->Tag_->setTagsForSave($this->data['Tags']['tags'],array('privileges' => 555, 'creator' => $this->userId));
+				$this->Company_->setCompaniesForSave($this->data['Companies']['companies'],array('privileges' => 555, 'creator' => $this->userId));
+				
+				$contentBeforeSave = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
+				$childsToDelete = $contentBeforeSave[0]['Child'];				
+	
+				foreach($childsToDelete as $key => $child) {
+					foreach($this->Tag_->getNewAndExistingTags() as $tag) {
+						if($child['id'] == $tag['Node']['id']) {
+							unset($childsToDelete[$key]); continue 2;
+						}
+					}
+					foreach($this->Company_->getNewAndExistingCompanies() as $company) {
+						if($child['id'] == $company['Node']['id']) {
+							unset($childsToDelete[$key]); continue 2;
+						}
 					}
 				}
-				foreach($this->Company_->getNewAndExistingCompanies() as $company) {
-					if($child['id'] == $company['Node']['id']) {
-						unset($childsToDelete[$key]); continue 2;
-					}
-				}
-			}
-			
-			if($this->Content_->saveContent() !== false) { //If saving the content was successfull then...
 				
-				$this->Content_->removeChildsFromContent($childsToDelete);
-				$this->Tag_->linkTagsToObject($this->Content_->getContentId()); //We have content ID after content has been saved
-				$this->Company_->linkCompaniesToObject($this->Content_->getContentId());
-				
-				$errors = array();		
-				if(empty($errors)) {
-					$this->Session->setFlash('Your content has been successfully saved.', 'flash'.DS.'successfull_operation');
+				if($this->Content_->saveContent() !== false) { //If saving the content was successfull then...
 					
+					$this->Content_->removeChildsFromContent($childsToDelete);
+					$this->Tag_->linkTagsToObject($this->Content_->getContentId()); //We have content ID after content has been saved
+					$this->Company_->linkCompaniesToObject($this->Content_->getContentId());
+					
+					$errors = array();		
+					if(empty($errors)) {
+						$this->Session->setFlash('Your content has been successfully saved.', 'flash'.DS.'successfull_operation');
+						
+					} else {
+						$this->Session->setFlash('Your content has NOT been successfully saved.');
+					}
+	
+					if($this->Content_->getContentPublishedStatus() === "1") {
+						$this->redirect(array('controller' => 'contents', 'action' => 'view', $this->Content_->getContentId()));
+					} else {
+						$this->redirect(array('controller' => 'contents', 'action' => 'edit',$contentId));
+					}
+	
 				} else {
 					$this->Session->setFlash('Your content has NOT been successfully saved.');
+					$this->redirect('edit/'.$contentId);
 				}
-
-				if($this->Content_->getContentPublishedStatus() === "1") {
-					$this->redirect(array('controller' => 'contents', 'action' => 'view', $this->Content_->getContentId()));
-				} else {
-					$this->redirect(array('controller' => 'contents', 'action' => 'edit',$contentId));
-				}
-
 			} else {
-				$this->Session->setFlash('Your content has NOT been successfully saved.');
-				$this->redirect('edit/'.$contentId);
+				if($contentId == -1) {
+					$this->redirect('/');
+				}
+				$content = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
+				
+				if(empty($content)) {
+					$this->Session->setFlash('Invalid content ID');
+					$this->redirect('/');
+				} else {
+					$this->Content_->setAllContentDataForEdit($content[0]);
+					$editData = $this->Content_->getContentDataForEdit();
+					$this->data = $editData;
+				}
+				$this->set('language_list',$this->Language->find('list',array('order' => array('Language.name' => 'ASC'))));
+				$this->set('content_type',$content[0]['Node']['class']);
 			}
 		} else {
-			if($contentId == -1) {
-				$this->redirect('/');
-			}
-			$content = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $contentId),array(),true);
-			
-			if(empty($content)) {
-				$this->Session->setFlash('Invalid content ID');
-				$this->redirect('/');
-			} else {
-				$this->Content_->setAllContentDataForEdit($content[0]);
-				$editData = $this->Content_->getContentDataForEdit();
-				$this->data = $editData;
-			}
-			$this->set('language_list',$this->Language->find('list',array('order' => array('Language.name' => 'ASC'))));
-			$this->set('content_type',$content[0]['Node']['class']);
+			$this->redirect('/');
 		}
 	}
 	
