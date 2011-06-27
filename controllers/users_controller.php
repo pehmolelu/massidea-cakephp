@@ -28,7 +28,7 @@
 
 class UsersController extends AppController {
 	public $name = 'Users';
-	public $components = array('RecaptchaPlugin.Recaptcha', 'RequestHandler'); 
+	public $components = array('RecaptchaPlugin.Recaptcha', 'RequestHandler', 'Email', 'Token'); 
 	public $helpers = array('RecaptchaPlugin.Recaptcha');
 	
 	function beforeFilter() {
@@ -71,9 +71,14 @@ class UsersController extends AppController {
 					}
 				}
 				// Continue authentication
-				if($this->Auth->login($this->data)) {
-					$this->Session->setFlash(__('Successfully logged in!', true));
-					$this->redirect('/');
+				if(!$this->Token->hasPendingActivation($dbUserData['User']['id'])) {
+					if($this->Auth->login($this->data)) {
+						$this->Session->setFlash(__('Successfully logged in!', true));
+						$this->redirect('/');
+					}
+				} else {
+					$this->Session->setFlash(__('Login failed due to pending email verification.', true));
+					$this->redirect('/users/login');
 				}
 			}
 		}
@@ -100,22 +105,83 @@ class UsersController extends AppController {
 				// Save user data
 				$userSaved = $this->User->saveAll($this->data['User'], array('validate' => false));
 
+				$signupErrors = array();
 				if($userSaved) {
 					// Reformat array structure for saving multiple key-value pairs
 					$this->data['Profile'] = $this->__reformatProfileData($this->User->id, $this->data['Profile']);
 					// Save profile data
 					$profileSaved = $this->User->Profile->saveAll($this->data['Profile'], array('validate' => false));
 					if($profileSaved) {
-						$this->Auth->login($this->data);
-						$this->Session->setFlash(__('Registration successful!', true));
-						$this->redirect('/');
+						// Send activation token via email
+						if($this->__sendActivationMail($this->User->id, $this->data['User'])) {
+							$this->Session->write('Activation.mail', $this->data['User']['email']);
+							$this->Session->setFlash(__('Registration confirmation mail sent', true));
+							$this->redirect('/users/activate');
+						} else {
+							$signupErrors[] = "Couldn't create/send activation token"; 
+						}
 					} else {
-						CakeLog::write('error', "Registration failed, couldn't save profile data");
-						$this->User->delete($this->User->id);
-						$this->Session->setFlash(__('Registration failed', true));
+						$signupErrors[] = "Couldn't save profile data";
 					}
 				}
+				// Log possible signup errors
+				if(!empty($signupErrors)) {
+					foreach($signupErrors as $errorMsg) {
+						CakeLog::write('error', "Registration failed, reason: ".$errorMsg);
+					}
+					// Rollback user from database
+					$this->User->delete($this->User->id);
+					$this->Session->setFlash(__('Registration failed', true));
+				}
 			}
+		}
+	}
+	
+	function activate($code = null) {
+		$this->set('content_class', 'contentWithFullPage');
+		if(!empty($code)) {
+			$token = $this->Token->getActivationToken($code);
+			if(!empty($token)) {
+				if($this->Token->clearActivationToken($token['Token']['id'])) {
+					$this->Session->delete('Activation.mail');
+					$this->Session->setFlash(__('Account activated successfully, you may now log in.', true));
+					$this->redirect('/');
+				}
+			} else {
+				$this->set('invalid', true);
+			}
+		} else {
+			$address = $this->Session->read('Activation.mail');
+			if(isset($address)) {
+				$this->set('address', $address);
+			} else {
+				$this->redirect('/');
+			}
+		}
+	}
+	
+	/**
+	 * __sendActivationMail
+	 * 
+	 * Generates and sends an activation token code to given users email address.
+	 * 
+	 * @param string $userId
+	 * @param array $userData
+	 */
+	private function __sendActivationMail($userId = null, $userData = null) {
+		if(!empty($userId) && !empty($userData)) {
+			$code = $this->Token->createActivationCode($userId);
+			$this->Email->to = $userData['email'];
+			$this->Email->subject = 'Massidea.org account verification';
+			$this->Email->from = 'Massidea.org <massidea@massidea.org>';
+			$this->Email->template = 'activate';
+			$this->Email->sendAs = 'text';
+			$this->set('name', $userData['username']);
+			$this->set('link', 'activate/'.$code);
+			
+			return $this->Email->send();
+		} else {
+			return false;
 		}
 	}
 	

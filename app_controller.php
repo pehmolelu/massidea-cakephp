@@ -51,6 +51,7 @@ class AppController extends Controller {
 		$this->Auth->loginRedirect = '/';
 		$this->Auth->allow('*');
 		$this->Auth->authorize = 'controller';
+		$this->Auth->loginError = __('Login failed. Invalid username or password.', true);
 		
 		/**
 		 * Setting content class

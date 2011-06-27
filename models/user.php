@@ -60,6 +60,11 @@ class User extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
+		),
+		'Token' => array(
+			'className' => 'Token',
+			'foreignKey' => 'user_id',
+			'dependent' => false
 		)
 	);
 
