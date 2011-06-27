@@ -175,7 +175,7 @@ class UsersController extends AppController {
 			$this->Email->subject = 'Massidea.org account verification';
 			$this->Email->from = 'Massidea.org <massidea@massidea.org>';
 			$this->Email->template = 'activate';
-			$this->Email->sendAs = 'text';
+			$this->Email->sendAs = 'both';
 			$this->set('name', $userData['username']);
 			$this->set('link', 'activate/'.$code);
 			
