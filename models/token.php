@@ -28,7 +28,7 @@ class Token extends AppModel {
 	);
 	
 	function getActivationToken($code = null) {
-		$return = $this->Token->find(
+		$return = $this->find(
 			'first', 
 			array('conditions' => array('Token.value' => (string)$code))
 		);
@@ -36,11 +36,11 @@ class Token extends AppModel {
 	}
 	
 	function clearActivationToken($id = null) {
-		return $this->Token->delete($id);
+		return $this->delete($id);
 	}
 	
 	function hasPendingActivation($userId = null) {
-		$return = $this->Token->find(
+		$return = $this->find(
 			'count', array(
 				'conditions' => array(
 					'Token.user_id' => $userId,
@@ -62,7 +62,7 @@ class Token extends AppModel {
 					'expires' => date('Y-m-d H:i:s', strtotime("+24 hours"))
 				)
 			);
-			if($this->Token->save($data)) {
+			if($this->save($data)) {
 				return $hash;
 			}
 		}

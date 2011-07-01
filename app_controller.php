@@ -31,9 +31,14 @@ App::import('Lib', 'Jsmeta', array('file' => 'jsmeta.php'));
 class AppController extends Controller {
 	public $layout = 'layout';
 	public $helpers = array('Session', 'Html', 'Form', 'Cache');
-	public $components = array('Session', 'Auth');
+	public $components = array('Session', 'CustomAuth');
 	public $Nodes;
 	public $userId = null;
+	
+	public function constructClasses() {
+		parent::constructClasses();
+		$this->Auth = $this->CustomAuth;
+	}
 	
 	public function beforeFilter() {
 		$this->set('title_for_layout','Massidea.org');
