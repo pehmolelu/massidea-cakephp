@@ -32,9 +32,6 @@
  * GREY		= #CCCCCC
  */
  
-#privatemessages .message-header * {
-	display: inline;
-}
 
 #privatemessages .title-icon {
 	padding: 2px;
@@ -45,9 +42,6 @@
 	width: 150px;
 }
 
-#privatemessages .message-title {
-	font-size: 12px;
-}
 
 #privatemessages .message-header {
 	padding: 4px;
@@ -77,18 +71,36 @@
 
 
 #privatemessages td {
-	white-space:nowrap;	
 	vertical-align: middle;
-	
 }
 
 #privatemessages th {
 	vertical-align: middle;
 }
 
-
-#privatemessages tr {
-	height: 45px;
+#privatemessages thead tr, #privatemessages tfoot tr{
+	height: 40px;
 	
 }
 
+#privatemessages tbody tr.odd, #privatemessages tbody tr.even  {
+	height: 58px;
+	
+}
+
+#privatemessages th.checkbox-header {
+	padding: 0;
+	border-right: 0px;
+}
+#privatemessages th.message-username {
+	padding: 0;
+	border-left: 0px;
+}
+
+
+#privatemessages td.checkbox-column {
+	padding: 0;
+}
+#privatemessages td.message-username {
+	padding: 0;
+}

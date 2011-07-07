@@ -1,7 +1,7 @@
 function sendPrivateMessage(formData) {
 	console.log(formData);
 	$.ajax({ 
-		type: 'POST',
+		type: 'POST',	
 		data: formData,
 		url: jsMeta.baseUrl+"/private_messages/send/",
 		success: function(data) {
@@ -30,7 +30,7 @@ function initSendPrivateMessageDialog() {
 	$("#send_private_message").dialog({
 		autoOpen: false,
 		resizable: false,
-		height: 310,
+		height: 350,
 		width: 450,
 		show: {effect: 'slide', duration: 300},
 		hide: {effect:'slide', duration: 300, direction: 'right'},
