@@ -55,10 +55,6 @@ $body = '';
 ));
 ?>
 
-<?php echo $form->hidden('type', array('value' => "Content")); ?>
-
-<?php echo $form->hidden('id'); ?>
-
 <?php echo $form->hidden('class', array('value' => $content_type)); ?>
 
 <?php echo $form->hidden('Privileges.privileges'); ?>

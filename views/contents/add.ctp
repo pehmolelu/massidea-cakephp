@@ -55,12 +55,6 @@ $body = '';
 ));
 ?>
 
-<?php echo $form->hidden('type', array('value' => "Content")); ?>
-
-<?php echo $form->hidden('class', array('value' => $content_type)); ?>
-
-<?php echo $form->hidden('Privileges.privileges', array('value' => '755')); ?>
-
 <div id="content_languages" class="row field">
 <?php echo $form->input('language_id', array('type' => 'select',
 											 'selected' => "en",
