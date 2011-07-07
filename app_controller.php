@@ -30,10 +30,15 @@ App::import('Lib', 'Jsmeta', array('file' => 'jsmeta.php'));
 
 class AppController extends Controller {
 	public $layout = 'layout';
-	public $helpers = array('Session', 'Html', 'Form', 'Cache','Time');
-	public $components = array('Session', 'Auth');
+	public $helpers = array('Session', 'Html', 'Form', 'Cache');
+	public $components = array('Session', 'CustomAuth');
 	public $Nodes;
 	public $userId = null;
+	
+	public function constructClasses() {
+		parent::constructClasses();
+		$this->Auth = $this->CustomAuth;
+	}
 	
 	public function beforeFilter() {
 		$this->set('title_for_layout','Massidea.org');
@@ -51,6 +56,7 @@ class AppController extends Controller {
 		$this->Auth->loginRedirect = '/';
 		$this->Auth->allow('*');
 		$this->Auth->authorize = 'controller';
+		$this->Auth->loginError = __('Login failed. Invalid username or password.', true);
 		
 		/**
 		 * Setting content class
