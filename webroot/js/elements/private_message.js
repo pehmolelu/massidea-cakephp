@@ -1,4 +1,5 @@
 function sendPrivateMessage(formData) {
+	console.log(formData);
 	$.ajax({ 
 		type: 'POST',
 		data: formData,
@@ -25,7 +26,7 @@ function initSendPrivateMessageDialog() {
 		var chars = countCharactersLeft(this,limit);
 		$(characters).html(chars);
 	});
-	
+
 	$("#send_private_message").dialog({
 		autoOpen: false,
 		resizable: false,
@@ -37,7 +38,7 @@ function initSendPrivateMessageDialog() {
 		buttons: {
 			'Send Message': function() {
 				$("#PrivateMessageForm").submit();
-			}, 
+			},
 			Cancel: function() {
 				$(this).dialog("close");
 			}
@@ -49,6 +50,7 @@ function initSendPrivateMessageDialog() {
 			$(receiver).val("");
 		}
 	});
+
 	
 	
 	$("#PrivateMessageForm").submit(function(){
@@ -66,8 +68,7 @@ function initSendPrivateMessageDialog() {
 
 $(document).ready(function(){
 	initSendPrivateMessageDialog();
-	
-	$(".send-message > a").click(function() {
+	$(".send-message > a").live('click',function() {
 		var id = $(this).siblings('.send-message-id');
 		var name = $(this).siblings('.send-message-name');
 		$("#PrivateMessageTo").text(name.val());

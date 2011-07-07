@@ -296,6 +296,7 @@ $(document).ready(function(){
 	 */
 	
 	$("#terms_link").click(function(e){
+		console.log(e);
 		e.preventDefault();
 		$("#terms").dialog("open");	
 	});

@@ -30,7 +30,7 @@ App::import('Lib', 'Jsmeta', array('file' => 'jsmeta.php'));
 
 class AppController extends Controller {
 	public $layout = 'layout';
-	public $helpers = array('Session', 'Html', 'Form', 'Cache');
+	public $helpers = array('Session', 'Html', 'Form', 'Cache','Time');
 	public $components = array('Session', 'Auth');
 	public $Nodes;
 	public $userId = null;

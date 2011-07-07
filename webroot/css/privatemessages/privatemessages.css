@@ -1,5 +1,8 @@
 @CHARSET "UTF-8";
-@import "../datatables/datatables.css";
+
+@import "../datatables/demo_table_jui.css";
+
+
 /**
  * Content controller general CSS file
  *
@@ -18,7 +21,7 @@
  * #select
  */
 
- /**
+/**
  * CSS "constants" cheat sheet
  *
  * RED 		= #D21034
@@ -28,43 +31,64 @@
  * DEEPBLUE	= #003581
  * GREY		= #CCCCCC
  */
-
- #privatemessages .message-header *{
-	 display: inline;
+ 
+#privatemessages .message-header * {
+	display: inline;
 }
-#privatemessages .title-icon{
+
+#privatemessages .title-icon {
 	padding: 2px;
 }
-#privatemessages .message-from{
+
+#privatemessages .message-from {
 	font-size: 12px;
 	width: 150px;
-	}
-#privatemessages .message-title{
+}
+
+#privatemessages .message-title {
 	font-size: 12px;
 }
-#privatemessages .message-header{
+
+#privatemessages .message-header {
 	padding: 4px;
-	}
-#privatemessages .private-message{
+}
+
+#privatemessages .private-message {
 	font-size: 12px;
 }
+
 #privatemessages h2 {
-    font-size: 18px;
-    margin-top: 15px;
-    padding: 0 0 10px;
+	font-size: 18px;
+	margin-top: 15px;
+	padding: 0 0 10px;
 }
-#privatemessages .confirm-delete{
+
+#privatemessages .confirm-delete {
 	font-size: 11px;
 }
-#privatemessages.contentWithSidebar{
+
+#privatemessages.contentWithSidebar {
 	width: 567px;
 }
 
-#sidebar.left { width: 140px !important; }
+#sidebar.left {
+	width: 140px !important;
+}
 
 
-.dataTables_info { padding-top: 0; }
-			.dataTables_paginate { padding-top: 0; }
-			.css_right { float: right; }
-			#example_wrapper .fg-toolbar { font-size: 0.8em }
-			#theme_links span { float: left; padding: 2px 10px; }
+#privatemessages td {
+	white-space:nowrap;	
+	vertical-align: middle;
+	
+}
+
+#privatemessages th {
+	vertical-align: middle;
+}
+
+
+#privatemessages tr {
+	height: 45px;
+	
+}
+

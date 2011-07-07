@@ -31,7 +31,7 @@ echo $html->docType('xhtml11');
 	
 	<!--[if IE 7]> <?php echo $html->css('ie7fix'); ?> <![endif]-->
 	<?php 
-	$jsFiles = array_merge(array('jquery-1.4.4.min', //jQuery javascript library
+	$jsFiles = array_merge(array('jquery-1.6.2.min', //jQuery javascript library
 							'jquery-ui-1.8.7.custom.min', //User Interface extension for jQuery
 							'jquery.cookie', //jQuery cookie plugin
 							'global' //All global JS things used in site
