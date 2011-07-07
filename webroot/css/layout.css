@@ -26,22 +26,29 @@
 .dot-line { background:transparent url("../img/gray_dot_line.png") no-repeat; height:1px; }
 .left { float:left; }
 .right { float:right; }
+.right-text { text-align:right;}
 .center { text-align:center; }
 .middle { vertical-align: middle; }
 .hidden { display: none; }
 .clear { clear:both; }
+.clear-left { clear:left; }
+.clear-right { clear:right; }
+.fixed-table { table-layout:fixed; }
 .italic { font-style:italic; }
 .bold { font-weight: bold; }
 .column { width:220px; float:left; margin:0px 20px 10px 0px; }
-.nolist { word-wrap: break-word; }
-.nolist ul { list-style: none outside none; }
 .pointerCursor { cursor: pointer; }
 .icon { vertical-align: text-top; }
 .blockLink { display: block; width: 100%; height: 100%; }
+.inline { display: inline; }
 .bodyColor { color: #333333; }
 .hoverLink:hover { background-color: #F2F2F2; cursor: pointer; }
 .magnifyFont { font-size: 1.1em; }
 .magnifyFontMore { font-size: 1.2em; }
+.nolist { word-wrap: break-word; }
+.nolist ul { list-style: none outside none; }
+.no-overflow { overflow: hidden !important; }
+.no-wrap  { white-space:nowrap; }
 .shrinkFont { font-size: 0.9em; }
 .shrinkFontMore { font-size: 0.85em; }
 .shrinkFontMost { font-size: 0.8em; }
@@ -124,8 +131,7 @@ a:visited, a:hover, a:active { text-decoration:none; color: #0089CF; }
 #login_box a {
     color: #0089CF !important;
     text-decoration: none;
-    float: left;
-    padding: 0 0 0 10px;
+    float: right;
 }
 
 #login_box .submit {
@@ -152,6 +158,8 @@ a:visited, a:hover, a:active { text-decoration:none; color: #0089CF; }
 /* Search */
 #search { float: left; margin: 5px 20px 0 290px;} 
 #search #search-top { margin: 4px 0; text-align: right; width: 358px; }
+#search #search-top #message_link{vertical-align: middle;}
+#search #search-top #notification_link{vertical-align: middle;}
 #search #search-field { float: left; width: 358px; }
 #search #search-field #globalSearch { float: left; margin: 0 10px 10px 0; padding: 2px; width: 350px; }
 #search #search-submit { float: right; width: 50px; }
@@ -228,10 +236,9 @@ a:visited, a:hover, a:active { text-decoration:none; color: #0089CF; }
 /**
  * Flash
  */
-#flashPusher { display: block; height: 0px; }
-#flash { display: none; color: white; text-align: center; font-weight: bold; z-index: 99999; width: 100%; position: fixed; min-height: 32px; background: #333 bottom url('../img/flashback.png') repeat-x; }
-#flash .message { padding: 10px 0 10px 0; }
-#flash #successfull_operation { background: #334733 bottom url('../img/flashback-green.png') repeat-x; }
+#flash { background: #000; color: white; text-align: center; font-weight: bold;  z-index: 99999; width: 300px;  position: fixed; margin-left: -150px; left: 50%; display: none; }
+#flash .flashBox  { padding: 6px; }
+#flash #successfull_operation { background: #4B9B07; }
 
 /** Element styles */
 #signuplink { padding-bottom: 2px; text-align: center; }

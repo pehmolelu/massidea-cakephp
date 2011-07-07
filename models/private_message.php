@@ -16,11 +16,11 @@ class PrivateMessage extends AppModel {
 	);
 
 	var $belongsTo = array(
-		'User' => array(
+		'UserReceiver' => array(
 			'className' => 'User',
 			'foreignKey' => 'receiver'
 		),
-		'User' => array(
+		'UserSender' => array(
 			'className' => 'User',
 			'foreignKey' => 'sender'
 		)
