@@ -28,7 +28,7 @@
 
 class UsersController extends AppController {
 	public $name = 'Users';
-	public $components = array('RecaptchaPlugin.Recaptcha', 'RequestHandler'); 
+	public $components = array('RecaptchaPlugin.Recaptcha', 'RequestHandler', 'Email', 'Token'); 
 	public $helpers = array('RecaptchaPlugin.Recaptcha');
 	
 	function beforeFilter() {
@@ -38,44 +38,11 @@ class UsersController extends AppController {
 	
 	function login() {
 		$this->set('content_class', 'contentWithFullPage');
+
 		// If already logged in, redirect to home
 		// TODO: redirect back where came from
 		if($this->Session->read('Auth.User')) {
 			$this->redirect('/');
-		}
-		if(!empty($this->data)) {
-			// Get user record by username
-			$dbUserData = $this->User->findByUsername($this->data['User']['username']);
-			
-			if(!empty($dbUserData)) {
-				$isOldUser = $dbUserData['User']['password_salt'] != '';
-				$plainPassword = $this->Auth->data['User']['password'];
-				// Find out what kind of hashing is used
-				if(!$isOldUser) {
-					// Hash password
-					$this->data['User']['password'] = $plainPassword;
-					$this->data = $this->User->customHashPasswords($this->data);
-				} else {
-					// Fallback, try to identify with older hashing algorithm
-					$this->data = $this->User->hashOldPassword($dbUserData, $plainPassword);
-					// If user identifies with old hashing algorithm
-					if($this->Auth->identify($this->data)) {
-						// Update user record for new hash (hashing occurs in UserModel, beforeSave())
-						$this->data['User']['password'] = $plainPassword;
-						$this->data['User']['password_salt'] = '';
-						$this->data = $this->User->save($this->data, array(
-							'validate' => false, 
-							'fieldList' => array('password', 'password_salt')
-						));
-						if(!empty($this->data)) CakeLog::write('activity', 'Updated password hashing for user '.$this->data['User']['username']);
-					}
-				}
-				// Continue authentication
-				if($this->Auth->login($this->data)) {
-					$this->Session->setFlash(__('Successfully logged in!', true));
-					$this->redirect('/');
-				}
-			}
 		}
 	}
 	
@@ -100,22 +67,82 @@ class UsersController extends AppController {
 				// Save user data
 				$userSaved = $this->User->saveAll($this->data['User'], array('validate' => false));
 
+				$signupError = null;
 				if($userSaved) {
 					// Reformat array structure for saving multiple key-value pairs
 					$this->data['Profile'] = $this->__reformatProfileData($this->User->id, $this->data['Profile']);
 					// Save profile data
 					$profileSaved = $this->User->Profile->saveAll($this->data['Profile'], array('validate' => false));
 					if($profileSaved) {
-						$this->Auth->login($this->data);
-						$this->Session->setFlash(__('Registration successful!', true));
-						$this->redirect('/');
+						// Send activation token via email
+						if($this->__sendActivationMail($this->User->id, $this->data['User'])) {
+							$this->Session->write('Activation.mail', $this->data['User']['email']);
+							$this->Session->setFlash(__('Registration confirmation mail sent', true));
+							$this->redirect('/users/activate');
+						} else {
+							$signupError = "Couldn't create/send activation token"; 
+						}
 					} else {
-						CakeLog::write('error', "Registration failed, couldn't save profile data");
-						$this->User->delete($this->User->id);
-						$this->Session->setFlash(__('Registration failed', true));
+						$signupError = "Couldn't save profile data";
 					}
 				}
+				// Log possible signup errors
+				if(!empty($signupError)) {
+					// Rollback user from database
+					CakeLog::write('error', "Registration failed, reason: ".$signupError);
+					$this->User->delete($this->User->id);
+					$this->Session->setFlash(__('Registration failed', true));
+				}
 			}
+		}
+	}
+	
+	function activate($code = null) {
+		$this->set('content_class', 'contentWithFullPage');
+		$this->set('message', 'invalid');
+		if(!empty($code)) {
+			$token = $this->Token->getActivationToken($code);
+			if(!empty($token)) {
+				if($this->Token->clearActivationToken($token['Token']['id'])) {
+					$this->Session->delete('Activation.mail');
+					$this->set('message', 'activated');
+				}
+			} else {
+				$this->set('message', 'invalid');
+			}
+		} else {
+			$address = $this->Session->read('Activation.mail');
+			if(isset($address)) {
+				$this->set('message', 'sent');
+				$this->set('address', $address);
+			} else {
+				$this->redirect('/');
+			}
+		}
+	}
+	
+	/**
+	 * __sendActivationMail
+	 * 
+	 * Generates and sends an activation token code to given users email address.
+	 * 
+	 * @param string $userId
+	 * @param array $userData
+	 */
+	private function __sendActivationMail($userId = null, $userData = null) {
+		if(!empty($userId) && !empty($userData)) {
+			$code = $this->Token->createActivationCode($userId);
+			$this->Email->to = $userData['email'];
+			$this->Email->subject = 'Massidea.org account verification';
+			$this->Email->from = 'Massidea.org <massidea@massidea.org>';
+			$this->Email->template = 'activate';
+			$this->Email->sendAs = 'html';
+			$this->set('name', $userData['username']);
+			$this->set('link', 'activate/'.$code);
+			
+			return $this->Email->send();
+		} else {
+			return false;
 		}
 	}
 	

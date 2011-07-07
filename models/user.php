@@ -60,6 +60,11 @@ class User extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
+		),
+		'Token' => array(
+			'className' => 'Token',
+			'foreignKey' => 'user_id',
+			'dependent' => false
 		)
 	);
 
@@ -193,6 +198,26 @@ class User extends AppModel {
 	function customHashPasswords($data) {
 		$data['User']['password'] = Security::hash($data['User']['password']);
 		return $data;
+	}
+	
+	function isOldUser($userName = null) {
+		$return = $this->find(
+			'count', array(
+				'conditions' => array(
+					'User.username' => $userName,
+					'User.password_salt !=' => ''
+				)
+			)
+		);
+		return ($return > 0) ? true: false;
+	}
+	
+	function getUserSalt($username = null) {
+		$data = $this->find('list', array(
+			'conditions' => array('User.username' => $username),
+			'fields' => array('User.password_salt')
+		));
+		return current($data);
 	}
 		
 	/**
