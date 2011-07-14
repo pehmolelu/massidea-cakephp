@@ -34,6 +34,9 @@ class AppController extends Controller {
 	public $helpers = array('Session', 'Html', 'Form', 'Cache');
 	public $components = array('Session', 'CustomAuth');
 
+	public $helpers = array('Session', 'Html', 'Form', 'Cache','Time');
+	public $components = array('Session', 'CustomAuth');
+
 	public $Nodes;
 	public $userId = null;
 	
