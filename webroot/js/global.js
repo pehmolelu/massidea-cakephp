@@ -177,6 +177,15 @@ function hexFromRGB(r, g, b) {
 	return hex.join("").toUpperCase();
 }
 
+function nl2br (str, is_xhtml) {
+    // Converts newlines to HTML line breaks  
+    // version: 1103.1210
+    // discuss at: http://phpjs.org/functions/nl2br    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '' : '<br />';
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
+
+
 $(document).ready(function(){
 	
 	/**	
@@ -296,6 +305,7 @@ $(document).ready(function(){
 	 */
 	
 	$("#terms_link").click(function(e){
+		console.log(e);
 		e.preventDefault();
 		$("#terms").dialog("open");	
 	});

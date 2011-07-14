@@ -1,0 +1,106 @@
+@CHARSET "UTF-8";
+
+@import "../datatables/demo_table_jui.css";
+
+
+/**
+ * Content controller general CSS file
+ *
+ * ID:s that are used by layout and layout.css and must not be used to avoid duplicate id's:
+ * #alert
+ * #background
+ * #container
+ * #header
+ * #title
+ * #search
+ * #search-top
+ * #search-field
+ * #globalSearch
+ * #search-submit
+ * #submitsearch
+ * #select
+ */
+
+/**
+ * CSS "constants" cheat sheet
+ *
+ * RED 		= #D21034
+ * BLUE		= #0089CF
+ * GREEN	= #4B9B07
+ * YELLOW	= #FFC726
+ * DEEPBLUE	= #003581
+ * GREY		= #CCCCCC
+ */
+ 
+
+#privatemessages .title-icon {
+	padding: 2px;
+}
+
+#privatemessages .message-from {
+	font-size: 12px;
+	width: 150px;
+}
+
+
+#privatemessages .message-header {
+	padding: 4px;
+}
+
+#privatemessages .private-message {
+	font-size: 12px;
+}
+
+#privatemessages h2 {
+	font-size: 18px;
+	margin-top: 15px;
+	padding: 0 0 10px;
+}
+
+#privatemessages .confirm-delete {
+	font-size: 11px;
+}
+
+#privatemessages.contentWithSidebar {
+	width: 567px;
+}
+
+#sidebar.left {
+	width: 140px !important;
+}
+
+
+#privatemessages td {
+	vertical-align: middle;
+}
+
+#privatemessages th {
+	vertical-align: middle;
+}
+
+#privatemessages thead tr, #privatemessages tfoot tr{
+	height: 40px;
+	
+}
+
+#privatemessages tbody tr.odd, #privatemessages tbody tr.even  {
+	height: 58px;
+	
+}
+
+#privatemessages th.checkbox-header {
+	padding: 0;
+	border-right: 0px;
+}
+#privatemessages th.message-username {
+	padding: 0;
+	border-left: 0px;
+}
+
+
+#privatemessages td.checkbox-column {
+	padding: 0;
+}
+#privatemessages td.message-username {
+	padding: 0;
+}
