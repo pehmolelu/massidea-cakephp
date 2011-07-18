@@ -29,7 +29,7 @@
 class UsersController extends AppController {
 	public $name = 'Users';
 	public $components = array('RecaptchaPlugin.Recaptcha', 'RequestHandler', 'Email', 'Token'); 
-	public $helpers = array('RecaptchaPlugin.Recaptcha');
+	public $helpers = array('RecaptchaPlugin.Recaptcha', 'Time');
 	
 	function beforeFilter() {
 		parent::beforeFilter();
@@ -119,6 +119,31 @@ class UsersController extends AppController {
 				$this->redirect('/');
 			}
 		}
+	}
+	
+	function view($userName = null) {
+		if(!isset($userName)) {
+			$this->redirect('/');
+		}
+		
+		$this->set('content_class', 'contentWithFullPage');
+		$userdata = $this->User->getPublicUserdata($userName);
+		
+		if(!$userdata) {
+			$this->redirect('/');
+		}
+		
+		$this->set('username', $userdata['User']['username']);
+		$this->set('joinedDate', $userdata['User']['created']);
+		$this->set('loggedDate', $userdata['User']['last_login']);
+		$this->set('owner', ($this->Session->read('Auth.User.username') == $userdata['User']['username']));
+		
+		$excludeProfileData = array('status', 'openid', 'permissions');
+		foreach($userdata['Profile'] as $key => $child) {
+			if(in_array($child['key'], $excludeProfileData)) unset($userdata['Profile'][$key]);
+		}
+
+		$this->set('profileData', $userdata['Profile']);
 	}
 	
 	/**

@@ -63,12 +63,19 @@ class CustomAuthComponent extends AuthComponent {
 				$success = false;
 			} else {
 				if($success = parent::login($data)) {
+					$this->updateLastLogin($userId);
 					$this->Session->setFlash(__('Successfully logged in!', true));
 				}
 			}
 		}
 		
 		return $success;
+	}
+	
+	function updateLastLogin($userId = null) {
+		$this->User->create();
+		$this->User->id = $userId;
+		return $this->User->saveField('last_login', DboSource::expression('NOW()'));
 	}
 	
 	function updateToNewSalting($userId = null, $plainPwd = null) {

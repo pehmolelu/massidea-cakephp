@@ -219,6 +219,25 @@ class User extends AppModel {
 		));
 		return current($data);
 	}
+	
+	function getPublicUserdata($username = null) {
+		$data = $this->findByUsername($username, array(
+			'id', 'username', 'email', 'last_login', 'created'
+		));
+		
+		if(!empty($data)) {
+			unset($data['Privilege']);
+			unset($data['groups_users']);
+			unset($data['Token']);
+			unset($data['languages']);
+			
+			foreach($data['Profile'] as $child => $arr) {
+				if($arr['public'] == 0) unset($data['Profile'][$child]);
+			}
+		}
+		
+		return $data;
+	}
 		
 	/**
 	 * beforeSave
@@ -233,7 +252,9 @@ class User extends AppModel {
 		$this->data['User']['country_id'] = 'GB';
 		
 		// Hash password before saving
-		$this->data = $this->customHashPasswords($this->data);
+		if(isset($this->data['User']['password'])) {
+			$this->data = $this->customHashPasswords($this->data);
+		}
 		
 		return true;
 	}
