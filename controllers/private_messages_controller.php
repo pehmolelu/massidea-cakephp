@@ -52,6 +52,15 @@ class PrivateMessagesController extends AppController {
 		
 	}
 	
+// 	protected function _isValidPage($page) {
+// 		if ($page === 'inbox' || $page === 'sent') {
+// 			return  true;
+// 		} else {
+// 			return false;
+// 		}
+// 	}
+	
+	
 
 	public function send() {
 
@@ -98,15 +107,14 @@ class PrivateMessagesController extends AppController {
 
 	
 	public function browse() {
-		
 		$messages_in_count = $this->PrivateMessage->find('count', array('conditions' => array('receiver' => $this->userId)) );
 		$messages_out_count = $this->PrivateMessage->find('count', array('conditions' => array('sender' => $this->userId)) );
 		$this->set('content_sidebar','left');
 		$this->set('messages_in_count', $messages_in_count);
 		$this->set('messages_out_count', $messages_out_count);
 		$this->set('notifications_count', '0');
-		
-		
+		$this->set('page',$this->params['page']);
+						
 	}
 
 	/*
@@ -128,17 +136,22 @@ class PrivateMessagesController extends AppController {
 		)
 	*/
 	public function fetch_messages(){
-// 		$this->RequestHandler->setContent('json', 'text/x-json');
 		$id=$this->userId;
 		$this->autoRender = false;
-// 		$this->autoLayout = false;
 		App::import('Helper', 'smart_time');
 		$time = new SmarttimeHelper();
-		//debug($this->PrivateMessage->find('all'));die;
-		$messages=$this->PrivateMessage->find('all',array(
-				'conditions' => array('PrivateMessage.receiver' => $id),
-				'fields' => array('UserSender.username','PrivateMessage.sender', 'PrivateMessage.id', 'message', 'title','created')
-		));
+		if($this->params['page'] == 'sent' ) {
+			$messages=$this->PrivateMessage->find('all',array(
+							'conditions' => array('PrivateMessage.sender' => $id),
+							'fields' => array('UserReceiver.username','PrivateMessage.receiver', 'PrivateMessage.id', 'message', 'title','created')
+			));
+				
+		} else {
+			$messages=$this->PrivateMessage->find('all',array(
+								'conditions' => array('PrivateMessage.receiver' => $id),
+								'fields' => array('UserSender.username','PrivateMessage.sender', 'PrivateMessage.id', 'message', 'title','created')
+			));
+		}
 		foreach ($messages as $k => $message) {
 			$time->end = '+1 day';
 			$messages[$k]['PrivateMessage']['timeago'] =
@@ -146,7 +159,9 @@ class PrivateMessagesController extends AppController {
 			$messages[$k]['PrivateMessage']['message'] = htmlspecialchars($message['PrivateMessage']['message']);
 			$messages[$k]['PrivateMessage']['title'] = htmlspecialchars($message['PrivateMessage']['title']);
 		}
-		echo json_encode($messages);
+		
+		echo json_encode(array('messages' => $messages));
 	}
+
 
 }

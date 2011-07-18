@@ -187,7 +187,9 @@ function nl2br (str, is_xhtml) {
 
 
 $(document).ready(function(){
-	
+	$('a').click(function() {
+ console.log(this);
+});
 	/**	
 	 * jsMeta box contains information about:
 	 * - userId

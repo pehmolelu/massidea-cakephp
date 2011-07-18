@@ -5,7 +5,7 @@ function sendPrivateMessage(formData) {
 		data: formData,
 		url: jsMeta.baseUrl+"/private_messages/send/",
 		success: function(data) {
-			if(data) {
+			if(data == 1) {
 				setFlash("Message sent successfully",'successfull');
 				showFlash();
 			} else {

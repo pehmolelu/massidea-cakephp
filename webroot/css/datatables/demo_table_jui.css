@@ -278,11 +278,11 @@ table.display tr.even.gradeU {
 }
 
 
-tr.odd {
+tr.odd td {
 	background-color: #E2E4FF;
 }
 
-tr.even {
+tr.even td {
 	background-color: white;
 }
 
@@ -364,16 +364,10 @@ td.details {
 	background-color: #99B3FF;
 }
 
-table.display tr.even.row_selected td {
-	/*background-color: #B0BED9;*/
-}
 
-table.display tr.odd.row_selected td {
-	/*background-color: #9FAFD1;*/
-}
 
-table.display .row_expanded, table.display .message_row {
-	background-color: #ccc;
+table.display .message_tr{
+	height: 50px !important;
 }
 
 /*

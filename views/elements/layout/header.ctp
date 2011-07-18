@@ -9,7 +9,7 @@
 			Logged in as <?php echo $this->Session->read('Auth.User.username'); ?><span class="grey"> |</span>
                        <?php echo $this->Html->link(
                                $html->image('icon_message_off.png',array('class' => 'icon', 'id'=>'message_link')),
-                               array('controller'=>'private_messages', 'action'=>'browse'),
+                               array('controller'=>'private_messages', 'action'=>'inbox'),
                                array('escape' => false)); ?>
 
 		<?php //echo $html->image('icon_message_off.png',array('class' => 'icon', 'id'=>'message_link')); ?>
