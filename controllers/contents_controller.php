@@ -272,6 +272,8 @@ class ContentsController extends AppController {
 			$this->redirect('/');
 		}
 		$content = $content[0];
+		$isOwner = $content['User']['id'] == $this->userId;
+		
 		$contentSpecificData = $this->Content_->getContentSpecificDataFromData($content['Node']['data']);
 		$tags = array();
 		$relatedCompanies = array();
@@ -306,6 +308,7 @@ class ContentsController extends AppController {
 		$cookies = $this->Cookievalidation->getAndValidateCookies('expandStatus');
 
 		$this->set('cookies',$cookies);
+		$this->set('isOwner',$isOwner);
 		$this->set('contentId',$contentId);
 		$this->set('content',$content['Node']);
 		$this->set('language',$content['Language']);
