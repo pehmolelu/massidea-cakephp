@@ -70,9 +70,7 @@ function PrivateMessageClass(dataTable) {
 				nl2br(this.message,false),
 				"message_td");
 		$('td', this.messageRow).wrapInner(this.messageDiv);
-		$('.the_message').slideDown(300);
-		console.log($(this.messageRow));
-		
+		$('.the_message').slideDown(300);		
 		$(this.messageRow).addClass(this.className);
 		$(this.messageRow).addClass('message_row');
 		$(this.titleRow).addClass('row_expanded');
@@ -306,6 +304,19 @@ $(document).ready(function() {
 		dataTable = privateMessageInboxInit();
 	}
 	var PrivateMessage = new PrivateMessageClass(dataTable);
+	
+	$( "#PrivateMessages-table" ).selectable({ 
+				filter: 'tr ', 
+				distance: 20,
+				selected: function(event, ui) {
+					var checkbox = $(ui.selected).children().children()[0];
+					if($(checkbox).is(':checked')) {
+						$(checkbox).prop('checked', false);
+					} else {
+						$(checkbox).prop('checked', true);
+					}
+						
+				} });
 
 	$('#PrivateMessages-table > tbody > tr').live("click mouseover mouseout",function(e){
 
