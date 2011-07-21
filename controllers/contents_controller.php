@@ -106,7 +106,7 @@ class ContentsController extends AppController {
 				}
 				
 				if(in_array($contentType,$this->validContentTypes)) {
-					$this->data['Node']['class'] = $this->params['type'];
+					$this->data['Node']['class'] = $contentType;
 				}			
 				
 				$this->Content_->setAllContentDataForSave($this->data);
