@@ -11,6 +11,7 @@
 <br/>
 <?php __('Content votes') ?>: 143
 </p>
+<?php if(isset($userId)): ?>
 <ul>
 	<li>
 		<a href="#" id="content_vote_up" class="hoverLink">
@@ -54,16 +55,18 @@
 		<?php echo $html->image('icon_flag.png',array('class' => 'icon')); ?>
 		<?php __('Flag as inappropriate') ?></a>
 	</li>
-	
+
+	<?php if($isOwner): ?>
 	<li class="small-padding-top-bottom">
 		<a href="<?php echo $html->url(array('action' => 'edit',$content['id'])); ?>" class="hoverLink blockLink">
 		<?php echo $html->image('icon_edit.png',array('class' => 'icon')); ?>
 		<?php __('Edit content') ?>
 		</a>
 	</li>
+	<?php endif; ?>
 
 </ul>
-
+<?php endif; ?>
 
 <?php 
 $expandIcons = array('block' => 'icon_minus_tiny.png',
@@ -71,23 +74,32 @@ $expandIcons = array('block' => 'icon_minus_tiny.png',
  ?>
 
 <div id="linked-container" class="margin-top" >
+
 	<h3 class="grey left small-padding-top-bottom pointerCursor noBackground nomargin">
 	<?php echo $html->image($expandIcons[$cookies['linked']],array('class' => 'icon')); ?>
 	<?php __('Linked') ?> (<span><?php echo $linkedContentsCount; ?></span>)
 	</h3>
+	
+	<?php if(isset($userId)): ?>
 	<a href="#" id="linked-addnewlink-link" class="hoverLink right small-padding-top-bottom ">
 		<?php echo $html->image('icon_link.png',array('class' => 'icon')); ?>
 		<?php __('Add link') ?>
 	</a>
+	<?php endif; ?>
+	
 	<div class="clear dot-line-720"></div>
 	<ul style="display: <?php echo $cookies['linked']; ?>">
+	
 	<?php if(!empty($linkedContents) && $linkedContentsCount > 0): foreach($linkedContents as $content): ?>
 		<li class="border-<?php echo $content['Node']['class']; ?> small-margin-top-bottom">
 			<a href="#" class="bold"><?php echo (empty($content['User']['username'])) ? 'Anonymous' : $content['User']['username']; ?>: </a>
-			<?php echo $html->image('icon_red_cross.png',array('class' => 'size16 right pointerCursor', 'id' => "delete_linked_content-".$content['Node']['id'])); ?>	
+			
+			<?php echo ($isOwner) ? $html->image('icon_red_cross.png',array('class' => 'size16 right pointerCursor', 'id' => "delete_linked_content-".$content['Node']['id'])) : null; ?>
+			
 			<a href="<?php echo $html->url(array('action' => 'view',$content['Node']['id'])); ?>" class="hoverLink blockLink"><?php echo $content['Node']['title']; ?></a>
 		</li>
 	<?php endforeach; endif;?>
+	
 	</ul>
 	
 </div>
