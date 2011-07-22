@@ -29,6 +29,7 @@
 class PrivateMessagesController extends AppController {
 
 	var $components = array('RequestHandler');
+	//var $uses = array('UserPrivateMessage');
 
 	public function beforeFilter() {
 		parent::beforeFilter();
@@ -37,19 +38,36 @@ class PrivateMessagesController extends AppController {
 		}
 
 	}
+
 	
-	protected function _isOwnerOf($userId, $messageId) {
-		$message = $this->PrivateMessage->find('first',
-			array('conditions' =>
-				array('PrivateMessage.id' => $messageId, 'PrivateMessage.receiver'=>$userId)
+	protected function _isOwnerOf($userId, $messageId, $checkReceiver = null) {
+		if (!$checkReceiver === false) {
+			$message = $this->PrivateMessage->UserPrivateMessage->find('first',
+			array('conditions' => array(
+					'private_message_id' => $messageId,
+					'receiver_id'=>$userId),
+				  'recursive' => '-1'				
 			)
-		);
-		if (empty($message)) {
+			);
+			
+			$id = (isset($message['UserPrivateMessage']['id'])) ? $message['UserPrivateMessage']['id'] : null;
+		}	
+
+		if (!$checkReceiver === true) {
+			$message = $this->PrivateMessage->find('first',
+			array('conditions' =>
+			array('id' => $messageId, 'sender_id'=>$userId)
+			)
+			);			
+			$id = (isset($message['PrivateMessage']['id'])) ? $message['PrivateMessage']['id'] : null;
+		}
+
+		if (empty($id)) {
 			return false;
 		} else {
-			return true;
+			return $id;
 		}
-		
+
 	}
 	
 // 	protected function _isValidPage($page) {
@@ -69,12 +87,13 @@ class PrivateMessagesController extends AppController {
 		if ($this->RequestHandler->isAjax()) {
 			if (!empty($this->data)) {
 				//When users are ready this needs validation because data can be altered by end user.
-				$this->data['PrivateMessage']['sender'] = $this->userId; //replaced with user id from session!
+				$this->data['PrivateMessage']['sender_id'] = $this->userId; //replaced with user id from session!
 				$this->data['PrivateMessage']['message'] = trim($this->data['PrivateMessage']['message']);
 				$this->data['PrivateMessage']['title'] = trim($this->data['PrivateMessage']['title']);
-				
 				if($this->PrivateMessage->save($this->data)) {
-
+					$this->data['UserPrivateMessage']['private_message_id'] = $this->PrivateMessage->id;
+					$this->PrivateMessage->UserPrivateMessage->save($this->data);
+						
 					echo 1;
 				} else {
 					die;
@@ -87,34 +106,82 @@ class PrivateMessagesController extends AppController {
 		}
 	}
 
-	public function delete(){
+	public function delete_inbox(){
 		$this->autoRender = false;
 		$this->autoLayout = false;
+
 		if ($this->RequestHandler->isAjax()) {
-			if($this->_isOwnerOf($this->userId, $this->data['messageId'])) {
-				if($this->PrivateMessage->delete($this->data['messageId'])) {
-					echo 1;
-				} else {
-					echo 0;
-				}
+
+			if($id = $this->_isOwnerOf($this->userId, $this->data['messageId'], true)) {
+				
+				$this->PrivateMessage->UserPrivateMessage->set(array('id' => $id,'deleted' => true));
+				$this->PrivateMessage->UserPrivateMessage->save();
+				echo 1;
+
 			} else {
-				$this->redirect('/');
+				echo 0;
 			}
 		} else {
 			$this->redirect('/');
 		}
 	}
 
+// 	public function delete_(){
+// 		$this->autoRender = false;
+// 		$this->autoLayout = false;
+// 		debug($this->data); die;
+// 		if ($this->RequestHandler->isAjax()) {
+// 			if($this->_isOwnerOf($this->userId, $this->data['messageId'])) {
+	
+// 				$this->PrivateMessage->UserPrivateMessage->save()
+// 				echo 1;
+// 			} else {
+// 				echo 0;
+// 			}
+// 		} else {
+// 			$this->redirect('/');
+// 		}
+// 	} else {
+// 		$this->redirect('/');
+// 	}
+// 	}
+	
+// 	public function delete(){
+// 		$this->autoRender = false;
+// 		$this->autoLayout = false;
+// 		debug($this->data); die;
+// 		if ($this->RequestHandler->isAjax()) {
+// 			if($this->_isOwnerOf($this->userId, $this->data['messageId'])) {
+	
+// 				$this->PrivateMessage->UserPrivateMessage->save()
+// 				echo 1;
+// 			} else {
+// 				echo 0;
+// 			}
+// 		} else {
+// 			$this->redirect('/');
+// 		}
+// 	} else {
+// 		$this->redirect('/');
+// 	}
+// 	}
+
 	
 	public function browse() {
-		$messages_in_count = $this->PrivateMessage->find('count', array('conditions' => array('receiver' => $this->userId)) );
-		$messages_out_count = $this->PrivateMessage->find('count', array('conditions' => array('sender' => $this->userId)) );
+		$messages_in_count = $this->PrivateMessage->UserPrivateMessage->find('count', array('conditions' => array('receiver_id' => $this->userId)) );
+		$messages_out_count = $this->PrivateMessage->find('count', array('conditions' => array('PrivateMessage.sender_id' => $this->userId)) );
 		$this->set('content_sidebar','left');
 		$this->set('messages_in_count', $messages_in_count);
 		$this->set('messages_out_count', $messages_out_count);
 		$this->set('notifications_count', '0');
 		$this->set('page',$this->params['page']);
-						
+
+	}
+	public function foo() {
+		$this->autoRender = false;
+		$this->autoLayout = false;
+		$messages_out_count = $this->PrivateMessage->find('all');//, array('conditions' => array('sender_id' => $this->userId)) );
+		debug($messages_out_count);
 	}
 
 	/*
@@ -147,10 +214,22 @@ class PrivateMessagesController extends AppController {
 			));
 				
 		} else {
-			$messages=$this->PrivateMessage->find('all',array(
-								'conditions' => array('PrivateMessage.receiver' => $id),
-								'fields' => array('UserSender.username','PrivateMessage.sender', 'PrivateMessage.id', 'message', 'title','created')
+			//$this->UserPrivateMessage->contain();
+			$messages=$this->PrivateMessage->UserPrivateMessage->find('all',array(
+								'contain' => array(
+									'PrivateMessage.Sender' => array(
+										'fields' => array('username')
+									),
+ 									'Receiver'=> array(
+ 										'fields' => array('username')										
+ 									),
+ 									'PrivateMessage' => array(
+ 										'fields' => array('id','sender_id','parent_id','read_receipt','title','message','created')
+ 									),
+									'PrivateMessageTag'),
+								'conditions' => array('Receiver.id' => $id, 'UserPrivateMessage.deleted' => false)
 			));
+// 			debug($messages); die;
 		}
 		foreach ($messages as $k => $message) {
 			$time->end = '+1 day';

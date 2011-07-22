@@ -3,6 +3,7 @@ echo $html->script('datatables'.DS.'jquery.dataTables.min',array('inline'=>false
 echo $html->script('datatables'.DS.'tabletools'.DS.'js'.DS.'TableTools.min',array('inline'=>false));
 echo $html->script('datatables'.DS.'tabletools'.DS.'js'.DS.'ZeroClipboard',array('inline'=>false));
 echo $this->element('global'.DS.'private_message', array('cache' => false));
+echo $this->element('privatemessages'.DS.'create_tag', array('cache' => false));
 echo $this->Html->css(array('..'.DS.'js'.DS.'datatables'.DS.'tabletools'.DS.'css'.DS.'TableTools_JUI'),'stylesheet', array('inline' => false ) );
 echo $this->Html->scriptStart(array('inline'=>false));
 

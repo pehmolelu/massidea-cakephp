@@ -159,11 +159,22 @@ function privateMessageInboxInit() {
 	             },
 	             {
 	            	 "sExtends": "text",
+		             "sButtonText": "Create new Tag",
+		             "fnClick": function ( nButton, oConfig, oFlash ) {
+		 	         	$("#create_message_tag").dialog("open");
+		             }
+	             },
+
+
+	             {
+	            	 "sExtends": "text",
 		             "sButtonText": "Flag as Inappropriate",
 		             "fnClick": function ( nButton, oConfig, oFlash ) {
 		            	 
 		             }
 	             }
+	             
+	             
         	 ]
 		},
 		"oSearch": {"sSearch": ""},
@@ -173,8 +184,9 @@ function privateMessageInboxInit() {
 		"bAutoWidth": false,
 		"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
 
-			var id = aData.PrivateMessage.sender;
-			var sender = aData.UserSender.username;
+			var sender_id = aData.PrivateMessage.sender_id;
+			var sender = aData.PrivateMessage.Sender.username;
+			var reply_to_id = aData.PrivateMessage.id;
 			if  (!aData.PrivateMessage.title) {
 				aData.PrivateMessage.title = '&ltNo Title&gt';
 				$('td:eq(2)',nRow).addClass('grey');
@@ -185,7 +197,8 @@ function privateMessageInboxInit() {
 				<div class="send-message inline">\
 				<a href="#">Reply</a> | \
 				<input type="hidden" class="send-message-name" value="'+ sender +'" />\
-				<input type="hidden" class="send-message-id" value="'+ id +'" />\
+				<input type="hidden" class="send-message-id" value="'+ sender_id +'" />\
+				<input type="hidden" class="send-message-parent-id" value="'+ reply_to_id  +'" />\
 				</div>\
 				<div class="inline">\
 				<a href="#" class="privatemessage-delete">Delete</a>\
@@ -198,7 +211,7 @@ function privateMessageInboxInit() {
 			$('td:eq(1)',nRow).html(user_div);
 			$('td:eq(2)',nRow).html(aData.PrivateMessage.title + actions );
 
-			var checkbox = '<input type="checkbox" name="selected" value="'+id+'"/>';
+			var checkbox = '<input type="checkbox" name="selected" value="'+sender_id+'"/>';
 			$('td:eq(0)',nRow).html(checkbox);
 
 
@@ -209,7 +222,7 @@ function privateMessageInboxInit() {
 		"aoColumns": [
 		              {"mDataProp": "PrivateMessage.id", "bVisible": false},
 		              {"mDataProp": null, "bSortable": false, "sClass": "checkbox-column"},
-		              {"mDataProp": "UserSender.username" ,"sClass": "message-username"},
+		              {"mDataProp": "PrivateMessage.Sender.username" ,"sClass": "message-username"},
 		              {"mDataProp": "PrivateMessage.title", "sClass":"no-overflow message-title padding-left-right"},
 		              {"mDataProp": "PrivateMessage.created", "bVisible": false},
 		              {"mDataProp": "PrivateMessage.timeago" ,"iDataSort": 4,  "sClass":"center no-overflow"},
@@ -279,7 +292,7 @@ function privateMessageDelete(id) {
 	$.ajax({ 
 		type: 'POST',
 		data: {data:{messageId:id}},
-		url: jsMeta.baseUrl+"/private_messages/delete/",
+		url: jsMeta.baseUrl+"/private_messages/delete_"+ page+"/",
 		success: function(data) {
 			if(data) {
 				setFlash("Message deleted successfully",'successfull');
@@ -293,15 +306,61 @@ function privateMessageDelete(id) {
 
 }
 
+function PrivateMessageTagsCreateInit() {
+	$("#create_message_tag").dialog({
+		autoOpen: false,
+		resizable: false,
+		show: {effect: 'slide', duration: 300},
+		hide: {effect:'slide', duration: 300, direction: 'right'},
+		modal: true,
+		buttons: {
+			'Create Tag': function() {
+				$("#PrivateMessageTagsAddForm").submit();
+			},
+			Cancel: function() {
+				$('#PrivateMessageTagsTitle').html('');
+				$(this).dialog("close");
+			}
+		},
+		close: function() {
+		}
+	});
+	
+	$("#PrivateMessageTagsAddForm").submit(function(){
+		$("#create_message_tag").dialog('close');
+		data = $(this).serializeArray();
+		$.ajax({ 
+			type: 'POST',	
+			data: data,
+			//url: jsMeta.baseUrl+"/private_messages_tags/add/",
+			success: function(data) {
+				if(data == 1) {
+					setFlash("Message sent successfully",'successfull');
+					showFlash();
+				} else {
+					setFlash("Yet to create the model and controller! :P");
+					showFlash();
+				}
+			}
+		});
+		console.log(data);
+		return false;
+	});
+}
 
 
 
 $(document).ready(function() {
-	var dataTable
+	var dataTable;
+	PrivateMessageTagsCreateInit();
 	if (page == "sent") {		
 		dataTable = privateMessageSentInit();
 	} else {
 		dataTable = privateMessageInboxInit();
+		dataTable.fnClearTable();
+		dataTable.dataTableSettings[0].sAjaxSource = "/~manu/private_messages/fetch_messages/sent";
+		console.log(dataTable);
+		dataTable.fnDraw();
 	}
 	var PrivateMessage = new PrivateMessageClass(dataTable);
 	
@@ -316,7 +375,8 @@ $(document).ready(function() {
 						$(checkbox).prop('checked', true);
 					}
 						
-				} });
+				}
+	});
 
 	$('#PrivateMessages-table > tbody > tr').live("click mouseover mouseout",function(e){
 
@@ -331,10 +391,7 @@ $(document).ready(function() {
 			}			
 			$('td:eq(2) > div',this).addClass('hidden');//remove links for read/reply/delete on mouseout
 			return true;
-		}
-		
-		
-		
+		}		
 		
 		if(e.type=="click") {
 			PrivateMessage.titleRow = this;

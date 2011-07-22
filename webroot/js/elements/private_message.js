@@ -1,5 +1,4 @@
 function sendPrivateMessage(formData) {
-	console.log(formData);
 	$.ajax({ 
 		type: 'POST',	
 		data: formData,
@@ -71,8 +70,15 @@ $(document).ready(function(){
 	$(".send-message > a").live('click',function() {
 		var id = $(this).siblings('.send-message-id');
 		var name = $(this).siblings('.send-message-name');
+		var parent_id = $(this).siblings('.send-message-parent-id');
 		$("#PrivateMessageTo").text(name.val());
-		$("#PrivateMessageReceiver").val(id.val());
+		$("#UserPrivateMessageReceiverId").val(id.val());
+		if(parent_id) {
+			$("#PrivateMessageParentId").val(parent_id.val());
+		} else {
+			$("#PrivateMessageParentId").val(null);
+		}
+	
 		$("#send_private_message").dialog("open");
 		return false;
 	});

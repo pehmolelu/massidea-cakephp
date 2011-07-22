@@ -42,7 +42,7 @@ Router::connect('/', array('controller' => 'contents', 'action' => 'browse', 'al
 	);
 	Router::connect('/private_messages/send', array('controller' => 'private_messages', 'action' => 'send'));
 	Router::connect('/private_messages/delete', array('controller' => 'private_messages', 'action' => 'delete'));
-	Router::connect('/private_messages/*', array('controller' => 'private_messages', 'action' => 'browse', 'page' => 'inbox'));
+// 	Router::connect('/private_messages/*', array('controller' => 'private_messages', 'action' => 'browse', 'page' => 'inbox'));
 	//Router::connect('/*', array('controller' => 'contents', 'action' => 'browse', 'index'));
 	
 	

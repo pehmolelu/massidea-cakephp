@@ -13,7 +13,8 @@
 	<label for="PrivateMessageTo">To</label>
 	<p id="PrivateMessageTo"></p>
 	
-	<?php echo $form->hidden('receiver', array('value' => 0)); ?>
+	<?php echo $form->hidden('UserPrivateMessage.receiver_id', array('value' => 0)); ?>
+	<?php echo $form->hidden('PrivateMessage.parent_id', array('value' => 0)); ?>
 	<?php echo $form->input('title', array('type' => 'text',
 											'label' => 'Title')
 	); ?>
