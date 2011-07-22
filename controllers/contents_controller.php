@@ -92,7 +92,7 @@ class ContentsController extends AppController {
 		if(isset($this->userId)) {
 			
 			if(!$contentType = $this->Content_->validateContentType($contentType)) { //We validate the contentType received from url to prevent XSS.
-				$this->redirect(array('controller' => '/'));
+				$this->redirect('/');
 			}
 		
 			if (!empty($this->data)) { // If form has been posted
@@ -140,7 +140,7 @@ class ContentsController extends AppController {
 
 		} else {
 			$this->redirect('/');
-		}
+		} 
 		
 	}
 	
