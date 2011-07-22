@@ -65,7 +65,6 @@ function searchFromData(searchquery,data) {
 	var returns = [];
 	var options = $("#LinkSearchOptionsViewForm > input:checkbox");
 	$.each(data,function(){
-		//console.log(this.title +" "+this.id);
 		if(this.title.toLowerCase().indexOf(searchquery) > -1 || searchquery.length == 0){
 			if(this['class'] == 'challenge' && options[0].checked) {
 				returns.push(this);

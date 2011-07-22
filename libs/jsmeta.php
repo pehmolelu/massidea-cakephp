@@ -27,7 +27,7 @@
  *  @version    1.0
  */ 
 
-class Jsmeta extends object {
+class Jsmeta {
 	
 	private $_output = null;
 	

@@ -11,7 +11,7 @@
     <li class="margin-top small-padding-top-bottom">
         <div class="hoverLink">
                 <?php echo $this->Html->link('Inbox '.'<span class="grey">('.$messages_in_count.') </span>',
-                               'inbox',
+                               '#',
                                array('escape' => false)); ?>
         </div>
     </li>
@@ -25,7 +25,7 @@
     <li class="margin-top small-padding-top-bottom">
         <div class="hoverLink">
                 <?php echo $this->Html->link('Sent'.'<span class="grey">('.$messages_out_count.') </span>',
-                               'sent', 
+                               'sent',
                                array('escape' => false,'class' => 'sent_box')); ?>
         </div>
     </li>

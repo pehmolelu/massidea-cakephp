@@ -83,20 +83,34 @@
 	
 }
 
-#privatemessages tbody tr.odd, #privatemessages tbody tr.even  {
-	height: 58px;
-	
+#privatemessages tbody tr.odd , #privatemessages tbody tr.even   {
+
+	cursor: pointer;
+}
+/*#privatemessages tbody tr.odd td.message_td, #privatemessages tbody tr.even td.message_td{
+*/
+#privatemessages tbody tr td.message_td {
+	cursor: default;
 }
 
-#privatemessages th.checkbox-header {
+
+#privatemessages th {
 	padding: 0;
-	border-right: 0px;
+	/*border-right: 0px;*/
+	border: 0;
 }
 #privatemessages th.message-username {
 	padding: 0;
 	border-left: 0px;
 }
 
+#privatemessages td {
+	border: 0px !important;
+}
+
+#privatemessages table, td, tr {
+	border-spacing: 0px;
+}
 
 #privatemessages td.checkbox-column {
 	padding: 0;
@@ -104,3 +118,11 @@
 #privatemessages td.message-username {
 	padding: 0;
 }
+#privatemessages .user_div {
+	height: 58px;
+}
+#privatemessages .user_div span {
+	line-height: 58px;
+}
+
+

@@ -32,7 +32,18 @@ Router::connect('/', array('controller' => 'contents', 'action' => 'browse', 'al
 	Router::connect('/contents/vision', array('controller' => 'contents', 'action' => 'browse', 'vision'));
 	Router::connect('/contents/*', array('controller' => 'contents', 'action' => 'browse')); //This is needed to route all other traffic to browse
 	
-//Router::connect('/*', array('controller' => 'contents', 'action' => 'browse', 'index'));
+	Router::connect('/private_messages/:page',
+		array('controller' => 'private_messages', 'action' => 'browse'),
+		array('page' => '(inbox)|(sent)')
+	);
+	Router::connect('/private_messages/fetch_messages/:page',
+		array('controller' => 'private_messages', 'action' => 'fetch_messages'),
+		array('page' => '(inbox)|(sent)')
+	);
+	Router::connect('/private_messages/send', array('controller' => 'private_messages', 'action' => 'send'));
+	Router::connect('/private_messages/delete', array('controller' => 'private_messages', 'action' => 'delete'));
+// 	Router::connect('/private_messages/*', array('controller' => 'private_messages', 'action' => 'browse', 'page' => 'inbox'));
+	//Router::connect('/*', array('controller' => 'contents', 'action' => 'browse', 'index'));
 	
 	
 	
