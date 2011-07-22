@@ -99,7 +99,7 @@ function publishValidation(allInputs) {
 $(document).ready(function() {
 
 	// Get all input elements
-	var allInputs = $("#contents :input[type=text], #contents :input[type=textarea]");
+	var allInputs = $("#contents :input[type='text'], #contents textarea");
 	var publish = $("#content_publish > fieldset :input");
 	
 	// Definitions for input boxes ([0] = minimum, [1] = maximum, [2] = required (1 true/0 false)
