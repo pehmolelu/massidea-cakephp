@@ -19,9 +19,16 @@ function initSendPrivateMessageDialog() {
 	var message = $("#PrivateMessageMessage");
 	var characters = $("#privateMessageCharacters");
 	var receiver = $("#PrivateMessageReceiver");
+	var title = $("#PrivateMessageTitle")
 	var limit = 1000;
 	$(characters).html(limit);
-	$(message).live("keydown keyup change",function(){ 
+	$(message).live("focus keydown keyup change",function(){ 
+		limit = 1000;
+		var chars = countCharactersLeft(this,limit);
+		$(characters).html(chars);
+	});
+	$(title).live("focus keydown keyup change",function(){ 
+		limit = 70;
 		var chars = countCharactersLeft(this,limit);
 		$(characters).html(chars);
 	});
@@ -31,7 +38,10 @@ function initSendPrivateMessageDialog() {
 		resizable: false,
 		height: 350,
 		width: 450,
-		show: {effect: 'slide', duration: 300},
+		show: {effect: 'slide', duration: 300, complete: function() {
+				$("#PrivateMessageTitle").focus();
+			}
+		},
 		hide: {effect:'slide', duration: 300, direction: 'right'},
 		modal: true,
 		buttons: {
@@ -45,7 +55,8 @@ function initSendPrivateMessageDialog() {
 		close: function() {
 			$(message).val("");
 			$(characters).text(limit);
-			$("#PrivateMessageTo").text("");
+			$("#PrivateMessageTo").val("");
+			$("#PrivateMessageTitle").val("");
 			$(receiver).val("");
 		}
 	});

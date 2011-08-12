@@ -273,6 +273,8 @@ class ContentsController extends AppController {
 		}
 		$content = $content[0];
 		$isOwner = $content['User']['id'] == $this->userId;
+		$contentUserId = $content['User']['id'];
+		$contentUsername = $content['User']['username'];
 		
 		$contentSpecificData = $this->Content_->getContentSpecificDataFromData($content['Node']['data']);
 		$tags = array();
@@ -311,6 +313,8 @@ class ContentsController extends AppController {
 		$this->set('isOwner',$isOwner);
 		$this->set('contentId',$contentId);
 		$this->set('content',$content['Node']);
+		$this->set('contentUserId',$contentUserId);
+		$this->set('contentUsername',$contentUsername);		
 		$this->set('language',$content['Language']);
 		$this->set('tags',$tags);
 		$this->set('relatedCompanies',$relatedCompanies);

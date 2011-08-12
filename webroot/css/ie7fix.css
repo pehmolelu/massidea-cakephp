@@ -5,3 +5,6 @@
 #header #search #select { margin-top:-3px; }
 #header #search #search-top #user_options { top: 25px; }
 #privatemessages div.ui-buttonset-multi { width:100%; }
+#privatemessages .delete-message { margin-left: -10px; }
+#sidebar #tags-container ul li a.tagAddLink { width: 22px; height: 16px; }
+#privatemessages .DTTT_container { width: 40% !important; }

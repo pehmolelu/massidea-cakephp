@@ -100,27 +100,24 @@ class PrivateMessage extends AppModel {
 			'exclusive' => '',
 			'finderQuery' => '',
 			'counterQuery' => ''
-		)
-	);
-
-
-	var $hasAndBelongsToMany = array(
-		'PrivateMessageTag' => array(
-			'className' => 'PrivateMessageTag',
-			'joinTable' => 'private_message_tags_private_messages',
+		),
+		'OutboxTag' => array(
+			'className' => 'OutboxTag',
 			'foreignKey' => 'private_message_id',
-			'associationForeignKey' => 'private_message_tag_id',
-			'unique' => true,
+			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
+			'exclusive' => '',
 			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
+			'counterQuery' => ''
 		)
 	);
+
+
+
 
 }
 ?>

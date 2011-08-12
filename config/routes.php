@@ -32,16 +32,35 @@ Router::connect('/', array('controller' => 'contents', 'action' => 'browse', 'al
 	Router::connect('/contents/vision', array('controller' => 'contents', 'action' => 'browse', 'vision'));
 	Router::connect('/contents/*', array('controller' => 'contents', 'action' => 'browse')); //This is needed to route all other traffic to browse
 	
-	Router::connect('/private_messages/:page',
-		array('controller' => 'private_messages', 'action' => 'browse'),
-		array('page' => '(inbox)|(sent)')
-	);
-	Router::connect('/private_messages/fetch_messages/:page',
-		array('controller' => 'private_messages', 'action' => 'fetch_messages'),
-		array('page' => '(inbox)|(sent)')
-	);
+
+	Router::connect('/private_messages/fetch_messages_conversation/:associate_id',
+		array('controller' => 'private_messages', 'action' => 'fetch_messages_conversation'
+			));
+	
+	
+	Router::connect('/private_messages/fetch_messages_thread/:associate_id',
+	array('controller' => 'private_messages', 'action' => 'fetch_messages_thread'
+				));
+	
+	
+	Router::connect('/private_messages/fetch_messages_tag/:tag_id',
+	array('controller' => 'private_messages', 'action' => 'fetch_messages_tag'
+	));
+	
+//	Router::connect('/private_messages/fetch_messages_:page',
+//		array('controller' => 'private_messages', 'action' => 'fetch_messages_:page'),
+//		array('page' => '(inbox)|(sent)|(myNotes)')
+//	);
+	
 	Router::connect('/private_messages/send', array('controller' => 'private_messages', 'action' => 'send'));
-	Router::connect('/private_messages/delete', array('controller' => 'private_messages', 'action' => 'delete'));
+	
+	Router::connect('/private_messages/delete/:page/:associate_id',
+	array('controller' => 'private_messages', 'action' => 'delete',
+	array( 'page' => '(conversation)|(thread)')));
+	
+	Router::connect('/private_messages/delete/:page/*',
+		array('controller' => 'private_messages', 'action' => 'delete',
+		array( 'page' => '(inbox)|(sent)|(notes)')));
 // 	Router::connect('/private_messages/*', array('controller' => 'private_messages', 'action' => 'browse', 'page' => 'inbox'));
 	//Router::connect('/*', array('controller' => 'contents', 'action' => 'browse', 'index'));
 	

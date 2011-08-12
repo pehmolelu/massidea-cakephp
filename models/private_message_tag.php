@@ -14,14 +14,40 @@ class PrivateMessageTag extends AppModel {
 			),
 		),
 		'name' => array(
-			'maxlength' => array(
-				'rule' => array('maxlength'),
+			'notempty' => array(
+				'rule' => array('notempty'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
+			'maxlength' => array(
+				'rule' => array('maxlength', 20),
+				//'message' => 'Your custom message here',
+				//'allowEmpty' => false,
+				//'required' => false,
+				//'last' => false, // Stop validation after this rule
+				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+		),
+		'color' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+			//'message' => 'Your custom message here',
+			//'allowEmpty' => false,
+			//'required' => false,
+			//'last' => false, // Stop validation after this rule
+			//'on' => 'create', // Limit validation to 'create' or 'update' operations
+		),
+			'validhex' => array(
+				'rule' => '/^#(([a-fA-F0-9]){3}){1,2}$/i',
+		//'message' => 'Your custom message here',
+		//'allowEmpty' => false,
+		//'required' => false,
+		//'last' => false, // Stop validation after this rule
+		//'on' => 'create', // Limit validation to 'create' or 'update' operations
+		),
 		),
 	);
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -36,36 +62,32 @@ class PrivateMessageTag extends AppModel {
 		)
 	);
 
-	var $hasAndBelongsToMany = array(
-		'PrivateMessage' => array(
-			'className' => 'PrivateMessage',
-			'joinTable' => 'private_message_tags_private_messages',
+	var $hasMany = array(
+		'InboxTag' => array(
+			'className' => 'InboxTag',
 			'foreignKey' => 'private_message_tag_id',
-			'associationForeignKey' => 'private_message_id',
-			'unique' => true,
+			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
+			'exclusive' => '',
 			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
+			'counterQuery' => ''
 		),
-		'UserPrivateMessage' => array(
-			'className' => 'UserPrivateMessage',
-			'joinTable' => 'private_message_tags_user_private_messages',
+		'OutboxTag' => array(
+			'className' => 'OutboxTag',
 			'foreignKey' => 'private_message_tag_id',
-			'associationForeignKey' => 'user_private_message_id',
-			'unique' => true,
+			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
+			'exclusive' => '',
 			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
+			'counterQuery' => ''
 		)
 	);
 
