@@ -7,11 +7,20 @@
 	<div id="search-top">
 		<?php if($this->Session->read('Auth.User')): ?>
 			Logged in as <?php echo $this->Session->read('Auth.User.username'); ?><span class="grey"> |</span>
-                       <?php echo $this->Html->link(
-                               $html->image('icon_message_off.png',array('class' => 'icon', 'id'=>'message_link')),
-                               array('controller'=>'private_messages', 'action'=>'inbox'),
-                               array('escape' => false)); ?>
-
+                       <?php
+                               echo $this->Html->link(
+                               $html->image('icon_message_off.png',array('class' => 'icon message_off')),
+                               array('controller'=>'private_messages', 'action'=>'browse'),
+                               array('escape' => false));
+                         ?>
+                         <?php
+                               echo $this->Html->link(
+                               $html->image('icon_message_on.png',array('class' => 'icon message_on hidden')),
+                               array('controller'=>'private_messages', 'action'=>'browse'),
+                               array('escape' => false));
+                         ?>
+                         
+        <span class="grey count_inbox"> </span>
 		<?php //echo $html->image('icon_message_off.png',array('class' => 'icon', 'id'=>'message_link')); ?>
 		<span class="grey"> |</span><a href="#">
 		<?php echo $html->image('notifications_a.png',array('class' => 'icon', 'id'=>'notification_link')); ?>

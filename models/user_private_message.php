@@ -83,21 +83,19 @@ class UserPrivateMessage extends AppModel {
 		)
 	);
 
-	var $hasAndBelongsToMany = array(
-		'PrivateMessageTag' => array(
-			'className' => 'PrivateMessageTag',
-			'joinTable' => 'private_message_tags_user_private_messages',
+	var $hasMany = array(
+		'InboxTag' => array(
+			'className' => 'InboxTag',
 			'foreignKey' => 'user_private_message_id',
-			'associationForeignKey' => 'private_message_tag_id',
-			'unique' => true,
+			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
+			'exclusive' => '',
 			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
+			'counterQuery' => ''
 		)
 	);
 

@@ -42,8 +42,8 @@
 	</li>
 	
 	<li class="send-message blockLink small-padding-top-bottom">
-		<input type="hidden" value="6" class="send-message-id" />
-		<input type="hidden" value="Hihhuli" class="send-message-name" />
+		<input type="hidden" value="<?php echo $contentUserId ?>" class="send-message-id" />
+		<input type="hidden" value="<?php echo $contentUsername ?>" class="send-message-name" />
 		<a href="#" class="hoverLink blockLink">
 		<?php echo $html->image('icon_message_off.png',array('class' => 'icon size16')); ?>
 		<?php __('Send private message') ?>

@@ -89,6 +89,8 @@ function showFlash() {
  */
 function resetFlash() {
 	$("#flash").stop(true,true).hide().empty();
+	$("#flashPusher").stop(true,true);
+	
 }
 
 /**
@@ -154,6 +156,7 @@ function countCharactersLeft(o,limit) {
  * @param string color		The color to use
  * @return null
  */
+
 function eventAnimate(o,color) {
 	o.stop(true,true);
 	backColor = o.css('backgroundColor');
@@ -161,6 +164,27 @@ function eventAnimate(o,color) {
 		color = 'red';
 	}
 	o.animate({backgroundColor: color}, 1).animate({backgroundColor: backColor}, 1400);
+}
+
+function privateMessagesCountUnread(pageRequested, bool) {
+	$.ajax({
+		type: 'POST',
+		url: jsMeta.baseUrl+"/private_messages/count/"+pageRequested,
+		success: function(data) {
+			if(pageRequested) {
+				if(data >= 1){
+					$("#header #search-top .message_off").addClass("hidden");	
+					$("#header #search-top .message_on").removeClass("hidden");					
+					$("#header #search-top .count_inbox").text("("+data+")");
+				} else {
+					$("#header #search-top .count_inbox").text("");
+					$("#header #search-top .message_on").addClass("hidden");	
+					$("#header #search-top .message_off").removeClass("hidden");
+				}				
+				if(bool) $('#sidebar.left .messages_in_count').text("("+data+")");
+			}			
+		}
+	});
 }
 
 function hexFromRGB(r, g, b) {
@@ -198,6 +222,8 @@ $(document).ready(function(){
 	
 	jsMeta = jQuery.parseJSON($("#jsmetabox").text());
 	loading = '<img alt="Loading..." src="'+jsMeta.baseUrl+'/img/ajax-loader-black.gif">';
+	privateMessagesCountUnread('inbox');
+	
 	
 	/**
 	 * Needs commenting

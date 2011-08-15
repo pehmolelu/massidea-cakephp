@@ -192,4 +192,21 @@ class UsersController extends AppController {
 		return $return;
 	}
 	
+	
+	public function listUsers() {
+// 		code to filter the contacts shown will come here this week!
+		$term = $this->params['url']['term']; 
+		$this->autoRender = false;
+		$allUsers = $this->User->find('all', array(
+			'fields' => array('id', 'username'),
+			'conditions' => array('username LIKE' => "%$term%"),
+			'recursive' => '0'
+		));
+		$parsedUserList = array();
+		foreach ($allUsers as $k => $user) {
+			$parsedUserList[$k]['value'] = $user['User']['username'];
+			$parsedUserList[$k]['id'] = $user['User']['id'];
+		}
+		echo json_encode($parsedUserList);
+	}
 }
