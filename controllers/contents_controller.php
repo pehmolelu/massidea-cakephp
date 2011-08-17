@@ -261,7 +261,7 @@ class ContentsController extends AppController {
 			$this->redirect('/');
 		}
 		$this->set('content_class','contentWithTopAndSidebar');		
-		
+		$this->Nodes->cache = false;
 		$users = array('table' => 'users', 'alias' => 'User', 'type' => 'left', 'conditions' => array("User.id = Privileges.creator"));
 		$lang = array('table' => 'languages', 'alias' => 'Language', 'type' => 'left', 'conditions' => array("Contents.language_id = Language.id"));
 		$this->Nodes->join = array($users, $lang);
@@ -271,9 +271,11 @@ class ContentsController extends AppController {
 			$this->Session->setFlash('Invalid content ID');
 			$this->redirect('/');
 		}
+		//debug($content);
 		$content = $content[0];
-		$isOwner = $content['User']['id'] == $this->userId;
 		$contentUserId = $content['User']['id'];
+		$isOwner = $contentUserId == $this->userId;
+		
 		$contentUsername = $content['User']['username'];
 		
 		$contentSpecificData = $this->Content_->getContentSpecificDataFromData($content['Node']['data']);
@@ -289,23 +291,42 @@ class ContentsController extends AppController {
 			}
 		}
 		
-		$linkedContentsCount = $this->LinkedContent->find('count',array(
-													'conditions' => array('LinkedContent.from' => $contentId)));
 		
-		$linkedContents = $this->LinkedContent->find('all',array(
-													'conditions' => array('LinkedContent.from' => $contentId),
-													'order' => array('LinkedContent.created DESC')
-		));
+		$l1 = array(
+			'table' => 'linked_contents',
+			'alias' => 'LinkedContent',
+			'type' => 'left',
+			'conditions' => array(
+				"LinkedContent.to = Contents.Id"
+			)
+		);
 		
-		$linkedContentsIds = array();
-		foreach($linkedContents as $linkedContent) {
-			$linkedContentsIds[] = $linkedContent['LinkedContent']['to'];
-		}
-		$idOrder = implode(",", $linkedContentsIds);
+		$l2 = array(
+			'table' => 'users',
+			'alias' => 'User',
+			'type' => 'left',
+			'conditions' => array(
+				"User.id = Privileges.creator"
+			)
+		);
 		
-		$linkedContents = $this->Nodes->find(array('type' => 'Content', 'Contents.id' => $linkedContentsIds),
-												array('order' => array("FIELD(Contents.id, $idOrder) asc")),true);
-
+		$this->Nodes->join = array($l1,$l2);
+		$linkedContents = $this->Nodes->find(array(
+			'type' => 'Content',
+			),
+			array(
+				'conditions' => array(
+					"LinkedContent.from" => $contentId
+				),
+				'order' => array('LinkedContent.created DESC')
+			),
+			false
+		);
+		
+		$linkedContentsCount = sizeof($linkedContents);
+		
+		//debug($linkedContents);die;
+		
 												
 		$cookies = $this->Cookievalidation->getAndValidateCookies('expandStatus');
 
