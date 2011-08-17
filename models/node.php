@@ -362,6 +362,7 @@ class Node extends AppModel {
 			return;
 		}
 		if($name == 'join') {
+			$this->_join = array();
 			foreach ($value as $v)
 				$this->_join[] = $v;
 		}
