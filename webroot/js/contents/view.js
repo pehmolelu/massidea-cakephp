@@ -1,53 +1,4 @@
-function expandCollapse(name,launcher,target) {
-	$(launcher).unbind('click');
-	$(target).slideToggle('fast', function() {
-		saveToCookie('contentsView', 'expandStatus', name, $(target).is(':hidden') ? 'none' : 'block');
-		$(launcher).bind('click', function () { expandCollapse(name,launcher,target); }); 
-		setImage(launcher,target);
-	});
-}
 
-function setImage(launcher,target) {
-	var expandButton = $(launcher).children(".icon");
-	if ($(target).is(':hidden')){
-		$(expandButton).attr("src", jsMeta.baseUrl+"/img/icon_plus_tiny.png");
-	} else {
-		$(expandButton).attr("src", jsMeta.baseUrl+"/img/icon_minus_tiny.png");
-	}
-}
-
-function searchPossibleLinks(formData) {
-	$.ajax({ 
-		type: 'POST',
-		dataType: 'json',
-		data: formData,
-		url: jsMeta.baseUrl+"/linked_contents/contentlinksearch/",
-		success: function(data) {
-			sendDataToLinkList(data);
-			return true;
-		}
-	});
-	return false;
-}
-
-function sendDataToLinkList(data) {
-	
-	var ul = $("#add_new_link > .add_new_link_list > ul");
-	var output = '';
-	
-	$("#ContentsLinkForm > div.input > input, #LinkSearchOptionsViewForm > input:checkbox").live('keyup change', function(){
-		output = getLinkedOutput(data);
-		$(ul).html(output);
-	});
-	
-	if(data.length === 0) {
-		output = '<li>No contents found</li>';
-		$(ul).html(output);
-	} else {
-		output = getLinkedOutput(data);	
-		$(ul).html(output);
-	}
-}
 
 function getLinkedOutput(data) {
 	var results = searchFromData($("#ContentsLinkForm > div.input > input").val(),data);
@@ -178,57 +129,89 @@ function deleteContentLink(link) {
 	});
 }
 
-function contentLinkInit() {
-	var linkedsFetched = false;
-	
-	$("#add_new_link").dialog({
-		closeOnEscape: true,
-		draggable: true,
-		modal: true,
-		resizable: false,
-		width: 630,
-		title: 'Add new link to content',
-		dialogClass: "fixedDialog",
-		autoOpen: false
-	});
-	
-	$("#linked-addnewlink-link").click(function(){
-		$("#add_new_link").dialog("open");
-		if(!linkedsFetched) {
-			$("#ContentsLinkForm").submit();
-			linkedsFetched = true;
-		}
-		return false;
-	});
-	
-	$("#linked-container > ul > li > img").live('click',function(){
-		if($(this).parent().hasClass('link_deleted')) {
-			linkContents(this,true);
-		} else {
-			deleteContentLink(this);
-		}
-		
-	});
-	
-	$("#ContentsLinkForm").submit(function(){
-		searchPossibleLinks($(this).serializeArray());
-		return false;
-	});
-	
-	$(".add_new_link_list > ul > li > .linked-title").live('click',function(){
-		linkContents(this);
-		return false;
-	});
-	
-}
 
 $(document).ready(function(){
+	var Contents = new FunctionsClass();
+	
+	Contents.extend('Controller','initlinkedContents',function(){
+		var linkedsFetched = false;
+		
+		$("#add_new_link").dialog({
+			closeOnEscape: true,
+			draggable: true,
+			modal: true,
+			resizable: false,
+			width: 630,
+			title: 'Add new link to content',
+			dialogClass: "fixedDialog",
+			autoOpen: false
+		});
+		
+		$("#linked-addnewlink-link").click(function(){
+			$("#add_new_link").dialog("open");
+			if(!linkedsFetched) {
+				$("#ContentsLinkForm").submit();
+				linkedsFetched = true;
+			}
+			return false;
+		});
+		
+		$("#linked-container > ul > li > img").live('click',function(){
+			if($(this).parent().hasClass('link_deleted')) {
+				linkContents(this,true);
+			} else {
+				deleteContentLink(this);
+			}
+			
+		});
+		
+		$("#ContentsLinkForm").submit(function(){
+			$.when(Massidea.Model('Contents').searchPossibleContentsToLink($(this).serializeArray())).done(function(data){
+				Massidea.View('Contents').linkedContents(data);
+			});
+			return false;
+		});
+		
+		$(".add_new_link_list > ul > li > .linked-title").live('click',function(){
+			linkContents(this);
+			return false;
+		});
+	});
+	
+	Contents.extend('Controller','toggleLinkedContents',function(name,launcher,target){
+		return Massidea.expandCollapse(name,launcher,target);
+	});
+	
+	Contents.extend('Model','searchPossibleContentsToLink',function(formData) {
+		return Massidea.json("/linked_contents/contentlinksearch/",formData);
+		
+	});
+	
+	Contents.extend('View','linkedContents',function(data) {
+		var ul = $("#add_new_link > .add_new_link_list > ul");
+		var output = '';
+		
+		$("#ContentsLinkForm > div.input > input, #LinkSearchOptionsViewForm > input:checkbox").live('keyup change', function(){
+			output = getLinkedOutput(data);
+			$(ul).html(output);
+		});
+		
+		if(data.length === 0) {
+			output = '<li>No contents found</li>';
+			$(ul).html(output);
+		} else {
+			output = getLinkedOutput(data);	
+			$(ul).html(output);
+		}
+	});
+	
+	Massidea.extend('Contents',Contents);
+	Massidea.Controller('Contents').initlinkedContents();
 		
 	$("#linked-container > h3").click(function(){
-		expandCollapse('linked',$(this),$("#linked-container > ul"));
+		Massidea.Controller('Contents').toggleLinkedContents('linked',$(this),$("#linked-container > ul"));
 	});
 
-	contentLinkInit();
 	
 	$("#flagAddForm > a").click(function(){
 		$("#flagAddForm").submit();

@@ -24,6 +24,7 @@
  */
 var jsMeta = "";
 var loading = "";
+var Massidea;
 
 /**
  * 
@@ -211,6 +212,7 @@ function nl2br (str, is_xhtml) {
 
 
 $(document).ready(function(){
+	Massidea = new MainClass();
 	
 	/**	
 	 * jsMeta box contains information about:

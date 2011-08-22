@@ -1,6 +1,7 @@
 <?php 
 echo $this->Html->script('infinitecarousel'.DS.'jquery.infinitecarousel2.min',array('inline' => false));
 echo $this->Html->script(strtolower($this->name).DS.$this->action,array('inline' => false));
+echo $this->Html->script('massidea',array('inline' => false));
 echo $this->element('global'.DS.'private_message', array('cache' => false)); 
 echo $this->element('global'.DS.'flag', array('cache' => false));
 echo $this->element('contents'.DS.'add_new_link_to_content', array('cache' => false));
